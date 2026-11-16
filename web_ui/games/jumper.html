@@ -1,0 +1,311 @@
+<!DOCTYPE html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+    <div class="screen">
+        <div class="flex one column border center">
+            <div id="score" class="border"></div>
+            <canvas id="canvas" class="flex one border" style="max-width: 100%;"></canvas>
+            <div class="flex one row wrappable border">
+                <button class="red-btn" onclick="game.pause()">start</button>
+                <button class="red-btn" id="jumpbtn">jump</button>
+                <button class="red-btn" onclick="game.modifiers.coins=!game.modifiers.coins;
+                this.textContent=`coins: ${game.modifiers.coins}`">coins: true</button>
+                <button class="red-btn" onclick="game.modifiers.movables=!game.modifiers.movables;
+                this.textContent=`movables: ${game.modifiers.movables}`">movables: true</button>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+    <script>
+        canvas = document.getElementById('canvas');
+		ctx = canvas.getContext('2d');
+        canvas.width = 440
+        canvas.height = 360
+
+        let player = {
+            id:0,
+            type:"player",
+            color:"blue",
+            x:32,y:128,w:32,h:32,vx:0,vy:-400,
+            collision_box:{x:0,y:0,w:32,h:32},
+            update:function(game,dt){
+                let player = this
+                player.x+=player.vx*dt
+                player.y+=player.vy*dt
+                player.collision_box.x=player.x
+                player.collision_box.y=player.y
+                if(player.y<0)player.y=1
+                if(player.y>canvas.height)game.state="game over"
+                if(player.vy<=250){
+                    player.vy+=1000*dt
+                }
+            }
+        }
+
+        let game = {
+            state:"pause",
+            score:0,
+            coins:0,
+            speed:150,
+            delta_timer:0,
+            tick:0,
+            modifiers:{coins:true,movables:true},
+            temps:{spwner:false},
+            actors:[
+                player
+            ],
+            update:function(dt){
+                document.getElementById("score").textContent=`score:${this.score} coins:${this.coins}`
+                if(this.state!="running")return
+                this.delta_timer+=dt
+                if(this.delta_timer>1){
+                    this.delta_timer=0
+                    this.tick+=1
+                    this.timer+=1
+                }
+                if(this.tick==1&&this.temps.spwner==false){
+                    let rand = Math.floor(Math.random()*4)
+                    if(rand==1){
+                        this.spawn_obstacle()
+                        this.spawn_coin()
+                    }
+                    if(rand==2){
+                        this.spawn_coin()
+                    }
+                    this.temps.spwner=true
+                }
+                if(this.tick>=2){
+                    let rand = Math.floor(Math.random()*5)
+                    if(this.modifiers.movables){
+                        if(rand==2){
+                            this.spawn_movable()
+                        }
+                    }
+                    this.spawn_obstacle()
+                    if(this.rand==3){
+                        this.spawn_coin()
+                    }
+                    if(rand==1){
+                        this.spawn_coin()
+                        this.spawn_obstacle()
+                    }
+                    this.temps.spwner=false
+                    this.tick=0
+                }
+                if(this.timer==20){
+                    this.speed+=10
+                    this.timer=0
+                }
+                for(let i=0;i<game.actors.length;i++){
+                    let entity = game.actors[i]
+                    entity.update(this,dt)
+                    if(entity.state=="dead"){
+                        this.actors.splice(i,1)
+                    }
+                }
+            },
+            pause:function(){
+                if(this.state=="pause"){
+                    this.state="running"
+                }else if(this.state=="game over"){
+                    this.actors = [player]
+                    player.vy=-400
+                    this.state="running"
+                } else{
+                    this.state="pause"
+                }
+            },
+            spawn_obstacle:function(){
+                let rand = Math.floor(Math.random()*5)
+                this.actors.push({
+                    id:this.actors.length,
+                    state:"active",
+                    type:"obstacle",
+                    color:"red",
+                    x:canvas.width,y:64*rand,w:64,h:64,vx:-this.speed,vy:0,
+                    collision_box:{x:0,y:0,w:32,h:32},
+                    update:function(game,dt){
+                        let player = this
+                        player.x+=player.vx*dt
+                        player.y+=player.vy*dt
+                        if(player.x+player.w<=0){
+                            this.state="dead"
+                        }
+                        for(let i=0;i<game.actors.length;i++){
+                            if(game.actors[i].type=="player"){
+                                let target = game.actors[i]
+                                if(game.aabb(this,target.collision_box)){
+                                    game.state="game over"
+                                }
+                            }
+                        }
+                        
+                    }
+                })
+            },
+            spawn_coin:function(){
+                if(!this.modifiers.coins)return
+                let rand = Math.floor(Math.random()*5)
+                this.actors.push({
+                    id:this.actors.length,
+                    state:"active",
+                    type:"coin",
+                    color:"yellow",
+                    x:canvas.width,y:64*rand,w:26,h:26,vx:-this.speed,vy:0,
+                    collision_box:{x:0,y:0,w:32,h:32},
+                    update:function(game,dt){
+                        let player = this
+                        player.x+=player.vx*dt
+                        player.y+=player.vy*dt
+                        if(player.x+player.w<=0){
+                            this.state="dead"
+                        }
+                        for(let i=0;i<game.actors.length;i++){
+                            if(game.actors[i].type=="player"){
+                                let target = game.actors[i]
+                                if(game.aabb(this,target.collision_box)){
+                                    game.coins+=1
+                                    this.state="dead"
+                                }
+                            }
+                        }
+                        
+                    }
+                })
+            },
+            spawn_movable:function(){
+                let rand = Math.floor(Math.random()*5)
+                let nm = 1
+                if(rand<3)nm=-1
+                this.actors.push({
+                    id:this.actors.length,
+                    state:"active",
+                    type:"obstacle",
+                    color:"green",
+                    x:canvas.width,y:64*rand,w:64,h:64,vx:-this.speed,vy:150*nm,
+                    collision_box:{x:0,y:0,w:32,h:32},
+                    delta_timer:0,
+                    timer:0,
+                    update:function(game,dt){
+                        let player = this
+                        this.delta_timer+=dt
+                        if(this.delta_timer>1){
+                            this.timer+=1
+                            this.delta_timer=0
+                        }
+                        if(this.timer==1){
+                            this.vy*=-1
+                            this.timer=0
+                        }
+                        player.x+=player.vx*dt
+                        player.y+=player.vy*dt
+                        if(player.x+player.w<=0){
+                            this.state="dead"
+                        }
+                        for(let i=0;i<game.actors.length;i++){
+                            if(game.actors[i].type=="player"){
+                                let target = game.actors[i]
+                                if(game.aabb(this,target.collision_box)){
+                                    game.state="game over"
+                                }
+                            }
+                        }
+                        
+                    }
+                })
+            },
+            aabb:function(actor1,actor2,game){
+                // simple AABB overlap test
+                if (!actor1 || !actor2) return false
+                return !(actor1.x + actor1.w <= actor2.x ||
+                        actor1.x >= actor2.x + actor2.w ||
+                        actor1.y + actor1.h <= actor2.y ||
+                        actor1.y >= actor2.y + actor2.h)
+            }
+        }
+
+        function addSwipeListener(element, callback, minDistance = 50){
+
+            let startX;
+            let startY;
+
+            element.addEventListener("touchstart", (e) => {
+
+                let t = e.touches[0];
+                startX = t.clientX;
+                startY = t.clientY;
+
+            });
+
+            element.addEventListener("touchend", (e) => {
+
+                let t = e.changedTouches[0];
+
+                let dx = t.clientX - startX;
+                let dy = t.clientY - startY;
+
+                if(Math.abs(dx) == Math.abs(dy)){
+                    callback("none")
+                    return
+                }
+
+                if(Math.abs(dx) > Math.abs(dy)){
+                    if(Math.abs(dx) > minDistance){
+                        callback(dx > 0 ? "right" : "left");
+                    }
+                } else {
+
+                    if(Math.abs(dy) > minDistance){
+                        callback(dy > 0 ? "down" : "up");
+                    }
+
+                }
+
+            });
+
+        }
+
+
+        addSwipeListener(document.getElementById("canvas"), (direction) => {
+            if(direction=="none"){
+                game.actors[0].vy=-400
+            }
+            if(direction=='up'){
+            }
+            if(direction == 'down'){
+            }
+            if(direction == 'right'){
+            }
+            if(direction == 'left'){
+            }
+        });
+
+        document.getElementById("jumpbtn").onclick=()=>{game.actors[0].vy=-400}
+		
+        let lastTime=0
+        function run(timeStamp){
+            let dt = (timeStamp - lastTime) / 1000;
+            lastTime = timeStamp;
+
+            game.update(dt)
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle='gray'
+            ctx.fillRect(0,0,canvas.width,canvas.height)
+            for(let i=0;i<game.actors.length;i++){
+                let entity = game.actors[i]
+                ctx.fillStyle=entity.color
+                ctx.fillRect(entity.x,entity.y,entity.w,entity.h)
+            }
+
+            requestAnimationFrame(run);
+        }
+        requestAnimationFrame(run);
+    </script>
+</body>
+</html>

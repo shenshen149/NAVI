@@ -1,0 +1,135 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="nav"></div>
+    <h1>files</h1>
+    <div id="filelist"></div>
+    <input class="btn" type="file" id="post-files" multiple>
+    <button class="btn" onclick="upload()">Upload</button>
+    <script>
+        async function get_data(){
+            try{
+                console.log("rendering data")
+                const res = await fetch(`${sessionStorage.getItem("navi_server_url")}/files`,
+                    {
+                        method: 'GET'
+                    },
+                    
+                );
+                const data = await res.json();
+                if(data.error){
+                    set_error(data.error)
+                    return
+                }
+                document.getElementById("filelist").innerHTML=""
+                for(let i=0;i<data.length;i++){
+                    //main div
+                    let div = document.createElement("div")
+
+                    //title
+                    let title = document.createElement("div")
+                    title.textContent=data[i].path
+
+                    //content
+                    let content = document.createElement("div");content.className="media_content"
+                    if(data[i].type){
+                        if (data[i].type=="image"){
+                            let img = document.createElement("img")
+                            img.src = `${sessionStorage.getItem("navi_server_url")}/files/`+data[i].path
+                            content.append(img)
+                        }
+                        if (data[i].type=="video"){
+                            let vid = document.createElement("video")
+                            vid.src = `${sessionStorage.getItem("navi_server_url")}/files/`+data[i].path
+                            vid.controls=true
+                            content.append(vid)
+                        }
+                    }
+
+                    //open btn
+                    let open = document.createElement("button");open.textContent="open";open.className="btn"
+                    open.onclick=()=>{window.location.href="files/"+data[i].path}
+
+
+                    //view img btn
+                    let view_img = document.createElement("button")
+                    view_img.textContent="view img";view_img.className="btn"
+                    let open_image = false
+                    view_img.onclick=()=>{
+                        if(open_image==false){
+                            let img = document.createElement("img")
+                            img.src = `${sessionStorage.getItem("navi_server_url")}/files/`+data[i].path
+                            content.append(img)
+                            open_image=true
+                        }else{
+                            content.innerHTML=""
+                            open_image=false
+                        }
+                        
+                    }
+
+                    //delete btn
+                    let delete_btn = document.createElement("button");delete_btn.textContent="delete";delete_btn.className="btn"
+                    delete_btn.onclick=()=>{} 
+
+                    //download btn
+                    let download_btn = document.createElement("button");
+                    download_btn.textContent = "download";download_btn.className="btn"
+                    download_btn.onclick = () => {
+                        const a = document.createElement("a");
+                        a.href = "files/" + data[i].path;
+                        a.download = data[i].path.split("/").pop(); // filename
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    };
+
+                    div.append(title,content, open, download_btn);
+                    document.getElementById("filelist").append(div)
+                }
+                
+            }catch (err){
+                console.log(err)
+            }
+           
+        }
+        async function upload() {
+            const files = document.getElementById("post-files").files;
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append("files", files[i]);
+            }
+            
+            try {
+                const button = document.querySelector('button[onclick="upload()"]');
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+                button.disabled = true;
+                const response = await fetch(`${sessionStorage.getItem("navi_server_url")}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) throw new Error('Failed to create post');
+                
+                const data = await response.json();
+                console.log('Success:', data);
+                alert('Post created successfully!');
+                get_data()
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error creating post: ' + error.message);
+            } finally {
+                const button = document.querySelector('button[onclick="upload()"]');
+                button.innerHTML = 'Upload Post';
+                button.disabled = false;
+            }
+        }
+        get_data()
+    </script>
+</body>
+</html>

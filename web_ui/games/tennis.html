@@ -1,0 +1,254 @@
+<!DOCTYPE html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div style="display: flex; height: 100%; width: 100%; flex-direction: column; align-items: center;">
+        <div class="screen">
+            <div class="flex one column border">
+                <div class="border" id="score_board"></div>
+                <canvas id="canvas" class="border" style="max-width: 100%;"></canvas>
+                <div class="flex one row">
+                    <div id="control-left" style="display: flex; width: 200px;height:200px;border: solid;"></div>
+                    <div id="control-right" style="display: flex; width: 200px;height:200px;border: solid;"></div>
+                </div>
+                <div class="flex row wrappable border">
+                    <button class="red-btn" onclick="game.pause()">start</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+    <script>
+        canvas = document.getElementById('canvas');
+		ctx = canvas.getContext('2d');
+        canvas.width = 420
+        canvas.height = 480
+
+        let player1 = {
+            id:0,
+            type:"player",
+            color:"blue",
+            x:canvas.width/2,y:canvas.height-48,w:48,h:48,vx:0,vy:0,
+            collision_box:{x:0,y:0,w:48,h:16},
+            update:function(game,dt){
+                let player = this
+                player.x+=player.vx*dt
+                player.y+=player.vy*dt
+                player.collision_box.x=player.x
+                player.collision_box.y=player.y
+                let ball = game.actors[2]
+
+                if(game.aabb(player.collision_box,ball)){
+                    if(ball.last_touched==1){
+                        return
+                    }else{
+                        ball.last_touched=1
+                        ball.vy*=-1
+                    }
+                }
+            }
+        }
+         let player2= {
+            id:1,
+            type:"player",
+            color:"green",
+            x:canvas.width/2,y:0,w:48,h:48,vx:0,vy:0,
+            collision_box:{x:0,y:0,w:48,h:16},
+            memory:{ball_position:0,counter:0,delta_timer:0},
+            update:function(game,dt){
+                let player = this
+                let self = this
+                self.memory.delta_timer+=dt
+                if(self.memory.delta_timer>=0.5){
+                    self.memory.counter+=1
+                    self.memory.delta_timer=0
+                }
+                player.x+=player.vx*dt
+                player.y+=player.vy*dt
+                self.collision_box.x=self.x
+                self.collision_box.y=self.y+(48-16)
+
+                if(self.memory.counter==1){
+                    let ball = game.actors[2]
+                    if(ball.x-self.x<0){
+                        let vel = (ball.x-self.x)*10
+                        if(vel<-300)vel=-300
+                        self.vx=vel
+                    } else if(ball.x-self.x>0){
+                        let vel = (ball.x-self.x)*10
+                        if(vel>300)vel=300
+                        self.vx=vel
+                    }else{
+                        self.vx=0
+                    }
+                    self.memory.counter=0
+                }
+
+               
+
+                if(game.aabb(self.collision_box,ball)){
+                    if(ball.last_touched==2){
+                        return
+                    }else{
+                        ball.last_touched=2
+                        ball.vy*=-1
+                    }
+                    
+                }
+
+            }
+        }
+        let ball = {
+            id:2,
+            type:"ball",
+            color:"orange",
+            x:canvas.width/2,y:canvas.height/2,w:32,h:32,vx:0,vy:0,
+            collision_box:{x:0,y:0,w:32,h:32},
+            last_touched:0,
+            update:function(game,dt){
+                let self = this
+                self.x+=self.vx*dt
+                self.y+=self.vy*dt
+                if(self.x<=0||self.x+self.w>=canvas.width)self.vx*=-1
+                if(self.y<=-32||self.y>=canvas.height){
+                    game.freeze_frame(0.5)
+                    self.x=canvas.width/2
+                    self.y=canvas.height/2
+                    self.vy*=-1
+                    if(self.last_touched==1){
+                        game.score+=1
+                        let data = get_data()
+                        data.coins+=1
+                        save_data(data)
+                    }
+                    self.last_touched=0
+                }
+            }
+        }
+
+        let game = {
+            state:"idle",
+            timer:0,
+            tick:0,
+            score:0,
+            freeze_timer:0,
+            actors:[
+                player1,player2,ball
+            ],
+            update:function(dt){
+                document.getElementById('score_board').innerHTML=`score:${game.score}`
+                if(this.state=="idle")return
+                if(this.state=="pause")return
+                if(this.freeze_timer>0){
+                    this.freeze_timer-=dt
+                    if(this.freeze_timer<=0){
+                        this.state="running"
+                    }
+                    return
+                }
+                this.timer+=dt
+                if(this.timer>1){
+                    this.timer=0
+                    this.tick+=1
+                }
+                if(this.tick>=2){
+                    let rand = Math.floor(Math.random()*5)
+                    this.tick=0
+                }
+                for(let i=0;i<game.actors.length;i++){
+                    let entity = game.actors[i]
+                    entity.update(this,dt)
+                    if(entity.state=="dead"){
+                        this.actors.splice(i,1)
+                    }
+                }
+            },
+            freeze_frame:function(num){
+                this.freeze_timer=num
+                this.state="freeze"
+            },
+            pause:function(){
+                if(this.state=="pause"){
+                    this.state="running"
+                }else if(this.state=="game over"){
+                    this.actors = [player]
+                    player.vy=-400
+                    this.state="running"
+                }else if(this.state=="idle"){
+                    this.state="running"
+                    this.actors[2].vx=200
+                    this.actors[2].vy=200
+                } else{
+                    this.state="pause"
+                }
+            },
+            aabb:function(actor1,actor2,game){
+                // simple AABB overlap test
+                if (!actor1 || !actor2) return false
+                return !(actor1.x + actor1.w <= actor2.x ||
+                        actor1.x >= actor2.x + actor2.w ||
+                        actor1.y + actor1.h <= actor2.y ||
+                        actor1.y >= actor2.y + actor2.h)
+            }
+        }
+
+        document.getElementById("control-left").addEventListener("touchstart", (e) => {
+            e.preventDefault()
+            game.actors[0].vx=-200
+        });
+        document.getElementById("control-left").addEventListener("touchend", (e) => {game.actors[0].vx=0});
+        document.getElementById("control-right").addEventListener("touchstart", (e) => {
+            e.preventDefault()
+            game.actors[0].vx=200
+        });
+        document.getElementById("control-right").addEventListener("touchend", (e) => {game.actors[0].vx=0});
+
+
+        //document.getElementById("jumpbtn").onclick=()=>{game.actors[0].vy=-400}
+
+        function handleKey(e){
+            switch(e.key){
+                case "ArrowLeft":
+                    game.actors[0].vx=-200
+                    break;
+                
+                case "ArrowRight":
+                    game.actors[0].vx=200
+                    break;
+                
+            }
+        }
+        function keydown(e){
+            game.actors[0].vx=0
+        }
+
+        document.addEventListener("keydown", handleKey);
+        document.addEventListener("keyup", keydown)
+		
+
+        let lastTime=0
+        function run(timeStamp){
+            let dt = (timeStamp - lastTime) / 1000;
+            lastTime = timeStamp;
+
+            game.update(dt)
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle='gray'
+            ctx.fillRect(0,0,canvas.width,canvas.height)
+            for(let i=0;i<game.actors.length;i++){
+                let entity = game.actors[i]
+                ctx.fillStyle=entity.color
+                ctx.fillRect(entity.x,entity.y,entity.w,entity.h)
+            }
+
+            requestAnimationFrame(run);
+        }
+        requestAnimationFrame(run);
+    </script>
+</body>
+</html>

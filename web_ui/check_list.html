@@ -1,0 +1,78 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="style.css">
+<style>
+    .inp{
+        padding: 10px;
+    }
+</style>
+<body>
+    <div id="check_lists"></div>
+    <div id="check_list"></div>
+    <script src="main.js"></script>
+    <script>
+        async function render_check_lists(){
+            document.getElementById("check_lists").innerHTML=""
+            let checklists = await provider.get_checklists()
+            for(let i=0; i<checklists.length; i++){
+                let btn = document.createElement("button")
+                btn.className="btn"
+                btn.textContent=checklists[i].name
+                btn.onclick=()=>{render_check_list(checklists[i])}
+                document.getElementById("check_lists").append(btn)
+            }
+            let div = document.createElement("div")
+            let input = document.createElement("input")
+            input.className="inp"
+            let submit = document.createElement("button")
+            submit.textContent="add"
+            submit.className="btn"
+            submit.onclick=()=>{
+                if(input.value!=""){
+                    provider.create_checklist(input.value)
+                    alert("created")
+                    render_check_lists()
+                }
+            }
+            div.append(input,submit)
+            document.getElementById("check_lists").append(div)
+        }
+        function render_check_list(items){
+            document.getElementById("check_list").innerHTML=""
+            let data = items.items
+            for(let i=0;i<data.length;i++){
+                let div = document.createElement("div")
+                let text = document.createElement("div")
+                text.textContent=data[i]
+                let check = document.createElement("button")
+                check.textContent="check"
+                check.className="btn"
+                check.onclick=()=>{
+                    check.textContent="/"
+                }
+                div.append(text,check)
+                document.getElementById("check_list").append(div)
+            }
+            let div = document.createElement("div")
+            let input = document.createElement("input")
+            let submit = document.createElement("button")
+            submit.textContent="add"
+            submit.className="btn"
+            submit.onclick=()=>{
+                if(input.value!=""){
+                    provider.add_check(items.name,input.value)
+                    items.items.push(input.value)
+                    render_check_list(items)
+                }
+            }
+            div.append(input,submit)
+            document.getElementById("check_list").append(div)
+        }
+        render_check_lists()
+    </script>
+</body>
+</html>

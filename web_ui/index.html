@@ -1,0 +1,50 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="nav"></div>
+    <H1>Main</H1>
+    <div>
+        <h2>storage</h2>
+        <button id="stor_btn"></button>
+        <h2>server url</h2>
+        <div id="server_url"></div>
+        <input type="text" id="url-input" onchange="set_url(document.getElementById('url-input').value)">
+        <h2>user data</h2>
+        <button class="btn" onclick="save_to_json()">export data</button>
+        <input class="btn" type="file" name="" id="import-file-input">
+        <button class="btn" onclick="load_json_file()">import data</button>
+    </div>
+    <h1>Games</h1>
+    <a href="games/jumper.html">jumper</a>
+    <a href="games/tennis.html">tennis</a>
+    <script src="main.js"></script>
+    <script>
+        let stor_btn = document.getElementById("stor_btn")
+        prov = sessionStorage.getItem("navi_user_storage_preference")
+        if(!prov){
+            prov = "local"
+            provider = localstorage_provider
+            sessionStorage.setItem("navi_user_storage_preference",prov)
+        }
+        stor_btn.textContent=prov
+        stor_btn.onclick=()=>{
+            if(prov=="local"){
+                prov="server"
+                stor_btn.textContent="server"
+                provider = server_provider
+                sessionStorage.setItem("navi_user_storage_preference",prov)
+            }else{
+                prov="local"
+                stor_btn.textContent="local"
+                provider = localstorage_provider
+                sessionStorage.setItem("navi_user_storage_preference",prov)
+            }
+        }
+    </script>
+</body>
+</html>

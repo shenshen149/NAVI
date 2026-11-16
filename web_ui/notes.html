@@ -1,0 +1,63 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="nav"></div>
+    <h1>notes</h1>
+    <div id="notes-list"></div>
+    <div id="note-display"></div>
+    <input type="text" placeholder="title" id="note-title">
+    <textarea id="note-text" rows="10" cols="30"></textarea>
+    <button class="btn" onclick="create_note()">new note</button>
+    <script src="main.js"></script>
+    <script>
+        //provider = localstorage_provider
+        async function create_note(){
+            let content = {}
+            content.title = document.getElementById("note-title").value
+            content.text = document.getElementById("note-text").value
+            await provider.create_user_note(content)
+            document.getElementById("note-title").value=""
+            document.getElementById("note-text").value=""
+            render_data()
+            
+        }
+        async function render_data(){
+            let data = await provider.get_user_notes()
+            document.getElementById("notes-list").innerHTML=""
+            for(let i=0;i<data.length;i++){
+                let div = document.createElement("div")
+                let title = document.createElement("div")
+                title.innerHTML=data[i].title
+                let open = document.createElement("button");open.textContent="open"
+                open.className="btn"
+                open.onclick=()=>{display_note(data[i])}
+                let delete_btn = document.createElement("button");delete_btn.textContent="delete"
+                delete_btn.className="btn"
+                delete_btn.onclick=()=>{delete_note(data[i],i)}
+                div.append(title,open,delete_btn)
+                document.getElementById("notes-list").append(div)
+            }
+           
+        }
+        function display_note(note){
+            document.getElementById("note-display").innerHTML=`
+                <h2>${note.title}</h2>
+                <div>${note.text}</div>
+            `
+        }
+        async function delete_note(data,index){
+            let body = data
+            let ind = index
+            provider.delete_user_note(body)
+            render_data()
+           
+        }
+        render_data()
+    </script>
+</body>
+</html>

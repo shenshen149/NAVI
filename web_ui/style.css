@@ -1,0 +1,31 @@
+.btn{
+    padding: 10px;
+    margin: 2px;
+    width: fit-content;
+    height: fit-content;
+}
+.inp{
+    padding: 10px;
+    margin: 2px;
+}
+.media_content>img{
+    max-width: 200px;
+    height: auto;
+}
+
+.flex{display: flex;}
+.one{ flex: 1;}
+.two{flex: 2;}
+.three{flex: 3;}
+.four{flex:4;}
+
+.row{flex-direction: row;}
+.column{flex-direction: column;}
+.wrappable{flex-wrap: wrap;}
+
+.scrollable-y{overflow-y:auto;}
+
+.center{
+    justify-content: center;
+    align-items: center;
+}

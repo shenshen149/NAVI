@@ -1,0 +1,161 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .box_div{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 200px;
+            height: 200px;
+            border: solid black;
+        }
+    </style>
+</head>
+<body>
+    <div id="course-select">
+        <h2>select courses</h2>
+        <div id="course-list" class="flex row wrappable"></div>
+        <button class="btn" onclick="export_course()">export</button>
+        <input type="file" name="" id="import_file">
+        <button class="btn" onclick="import_course()">import</button>
+        <button id="format" class="btn"></button>
+        <button class="btn" onclick="start_test()">start</button>
+    </div>
+    <div id="test-section">
+        <div id="question_elem"></div>
+    </div>
+    <script src="helpers.js"></script>
+    <script src="radicals.js"></script>
+    <script src="chinese.js"></script>
+    <script>
+        let question_list=[]
+        let selected_courses=[]
+        let format = "ordered"
+        let current_question_index=-1
+        let courses = [
+            radical_course,
+            hsk
+        ]
+        function render_course_list(){
+            selected_courses=[]
+            document.getElementById("course-list").innerHTML=""
+            for(let i=0;i<courses.length;i++){
+                let div = document.createElement("div")
+                div.className = "box_div"
+                let state = "unselect"
+                div.onclick=()=>{
+                    if(state=="unselect"){
+                        state="selected"
+                        div.style.border="solid blue"
+                        selected_courses.push(courses[i])
+
+                    }else{
+                        state="unselect"
+                        div.style.border="solid black"
+                        selected_courses.splice(i,1)
+                    }
+                    
+                }
+                
+                div.innerHTML=`${courses[i].name}`
+                document.getElementById("course-list").append(div)
+            }
+        }
+        function render_question(data){
+            document.getElementById("question_elem").innerHTML=""
+            let next_btn = document.createElement("button")
+            next_btn.className="btn"
+            next_btn.textContent="next"
+            next_btn.onclick=()=>{next_question()}
+            next_btn.disabled=true
+            let state="unanswered"
+            if(data.type=="multiple choice"){
+                let question = document.createElement("div")
+                question.innerHTML=`${data.question}`
+                let answer = document.createElement("div")
+                let options_div = document.createElement("div")
+                for(let i=0;i<data.options.length;i++){
+                    let option_btn = document.createElement("button")
+                    option_btn.className="btn"
+                    option_btn.textContent=data.options[i]
+                    option_btn.onclick=()=>{
+                        if(state=="answered")return
+                        if(i==data.correct){
+                            option_btn.style.backgroundColor="green"
+                            answer.innerHTML=`correct: ${data.options[data.correct]}`
+                        }else{
+                            option_btn.style.backgroundColor="red"
+                            answer.innerHTML=`incorrect: ${data.options[data.correct]}`
+                        }
+                        next_btn.disabled=false
+                        state="answered"
+                    }
+                    options_div.append(option_btn)
+                }
+                
+                document.getElementById("question_elem").append(question,options_div,answer)
+            }
+            if(data.type=="fill in"){
+                let question = document.createElement("div")
+                question.innerHTML=`${data.question}`
+                let answer = document.createElement("div")
+                let input = document.createElement("input")
+                input.className="inp"
+                let submit = document.createElement("button")
+                submit.className="btn"
+                submit.textContent="submit"
+                submit.onclick=()=>{
+                    if(state=="answered")return
+                    if(input.value==data.correct){
+                        submit.style.backgroundColor="green"
+                        answer.innerHTML=`correct: ${data.correct}`
+                    }else{
+                        submit.style.backgroundColor="red"
+                        answer.innerHTML=`incorrect: ${data.correct}`
+                    }
+                    next_btn.disabled=false
+                    state="answered"
+                }
+                
+                document.getElementById("question_elem").append(question,input,submit,answer)
+            }
+            document.getElementById("question_elem").append(next_btn)
+        }
+        function start_test(){
+            document.getElementById("course-select").style.display="none"
+            question_list=[]
+            for(let i=0;i<selected_courses.length;i++){
+                for(let j=0;j<selected_courses[i].questions.length;j++){
+                    question_list.push(selected_courses[i].questions[j])
+                }
+            }
+            next_question()
+        }
+        function next_question(){
+            if(format=="ordered"){
+                current_question_index+=1
+                if(current_question_index>=question_list.length)return
+                render_question(question_list[current_question_index])
+            }
+            if(format=="random"){
+                current_question_index=Math.floor(Math.random() * question_list.length);
+                render_question(question_list[current_question_index])
+            }
+        }
+        document.getElementById("format").textContent="ordered"
+        document.getElementById("format").onclick=()=>{
+            if(format=="ordered"){
+                format="random"
+            }else{
+                format="ordered"
+            }
+            document.getElementById("format").textContent=format
+        }
+        render_course_list()
+    </script>
+</body>
+</html>

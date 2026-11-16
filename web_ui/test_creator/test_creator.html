@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice test · quiz</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: linear-gradient(145deg, #f3f6fc 0%, #e9eefa 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 16px;
+        }
+        .quiz-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 760px;
+            border-radius: 36px;
+            box-shadow: 0 24px 42px -12px rgba(0, 20, 50, 0.25), 0 8px 18px rgba(0, 0, 0, 0.05);
+            padding: 32px 32px 28px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(2px);
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #0b1e3a;
+            margin: 0 0 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        h1 span {
+            background: #0b1e3a;
+            color: white;
+            font-size: 1rem;
+            padding: 4px 12px;
+            border-radius: 100px;
+            letter-spacing: 0.2px;
+            font-weight: 400;
+        }
+        .subhead {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #4b5e7a;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #dfe6f0;
+            padding-bottom: 14px;
+        }
+        .subject-tag {
+            background: #e2eaf8;
+            color: #1e3b6b;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 5px 14px;
+            border-radius: 100px;
+            text-transform: capitalize;
+            letter-spacing: 0.2px;
+        }
+        .mode-pill {
+            background: #f0f3fa;
+            color: #2b405e;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 5px 16px;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.15s;
+            border: 1px solid transparent;
+        }
+        .mode-pill:hover {
+            background: #dfe7f5;
+            border-color: #b8cbe0;
+        }
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 600;
+            line-height: 1.3;
+            color: #0f2647;
+            margin: 12px 0 28px 0;
+            word-break: break-word;
+        }
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .option {
+            background: #f9fcff;
+            border: 2px solid #dae2ef;
+            border-radius: 20px;
+            padding: 16px 24px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #1f344f;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            letter-spacing: -0.01em;
+        }
+        .option:hover:not(.disabled-option) {
+            background: #eef4ff;
+            border-color: #9bb6df;
+            transform: scale(1.005);
+        }
+        .option.correct-answer {
+            background: #e0f5e9;
+            border-color: #2d9e6b;
+            color: #0b4b2d;
+            box-shadow: 0 4px 12px rgba(45, 158, 107, 0.15);
+        }
+        .option.wrong-answer {
+            background: #ffe9e9;
+            border-color: #d34c4c;
+            color: #8a1f1f;
+        }
+        .option.disabled-option {
+            cursor: default;
+            opacity: 0.9;
+        }
+        .option .indicator {
+            font-size: 1.2rem;
+            font-weight: 600;
+            background: #ffffffb3;
+            border-radius: 40px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ffffff;
+            color: inherit;
+        }
+        .correct-answer .indicator {
+            background: #2d9e6b20;
+            border-color: #2d9e6b60;
+        }
+        .wrong-answer .indicator {
+            background: #d34c4c20;
+            border-color: #d34c4c60;
+        }
+        .feedback-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 8px;
+        }
+        .feedback-message {
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 8px 16px;
+            border-radius: 60px;
+            background: #f3f6fd;
+            color: #1e3b6b;
+            display: inline-block;
+        }
+        .next-btn {
+            background: #0b1e3a;
+            border: none;
+            border-radius: 60px;
+            padding: 14px 36px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            letter-spacing: 0.2px;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 10px 20px -8px #0b1e3a60;
+            border: 1px solid #ffffff20;
+            min-width: 150px;
+        }
+        .next-btn:hover:not(:disabled) {
+            background: #162c4f;
+            transform: translateY(-2px);
+            box-shadow: 0 16px 24px -10px #0b1e3a80;
+        }
+        .next-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .progress-badge {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            color: #4b5e7a;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .score-badge {
+            background: #e9eefa;
+            padding: 6px 18px;
+            border-radius: 60px;
+            font-weight: 500;
+            color: #1f344f;
+        }
+        .footer-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .reset-btn {
+            background: transparent;
+            border: 1.5px solid #d0dae9;
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-weight: 500;
+            color: #2b405e;
+            cursor: pointer;
+            transition: 0.15s;
+            font-size: 0.9rem;
+        }
+        .reset-btn:hover {
+            background: #eef3fc;
+            border-color: #9bb0cc;
+        }
+        .hidden {
+            display: none;
+        }
+        .spacer {
+            flex: 1;
+        }
+        .submit_btn{
+            padding: 4px;
+            border: solid rgb(113, 146, 255);
+            background-color: #c7deff;
+            border-radius: 25px;
+            width: 100px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-card" id="quizApp">
+        <h1>
+            📘 Practice test
+            <span>quiz</span>
+        </h1>
+
+        <div class="subhead">
+            <div class="subject-tag" id="subjectTag">calendar</div>
+            <div class="mode-pill" id="modeToggle" title="click to toggle order / random">
+                <span>🔀</span> <span id="modeLabel">random</span>
+            </div>
+        </div>
+
+        <!-- Question area -->
+        <div id="questionContainer">
+            <div class="question-text" id="questionText">Loading question...</div>
+            <div class="options-grid" id="optionsGrid"></div>
+        </div>
+
+        <!-- Feedback + next button -->
+        <div class="feedback-row">
+            <div class="feedback-message" id="feedbackMsg"></div>
+            <button class="next-btn" id="nextBtn" disabled>Next →</button>
+        </div>
+
+        <!-- progress and score -->
+        <div class="progress-badge">
+            <div class="score-badge" id="scoreDisplay">✅ 0 correct</div>
+            <div class="footer-buttons">
+                <button class="reset-btn" id="resetBtn">↻ restart</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            // ---------- QUESTION BANK ----------
+            let questionBank = [
+                { question: "meaning of 水", options: ["1", "water", "<img src='radics/shui.png'>", "4"], correct: 2, subject: "chinese" },
+                { question: "How many days in a week?", options: ["1", "2", "7", "4"], correct: 2, subject: "calendar" },
+                { question: "Which planet is known as the Red Planet?", options: ["Earth", "Mars", "Jupiter", "Venus"], correct: 1, subject: "science" },
+                { question: "What is the capital of France?", options: ["Berlin", "Madrid", "Paris", "Rome"], correct: 2, subject: "geography" },
+                { question: "What is 5 + 7?", options: ["10", "11", "12", "13"], correct: 2, subject: "math" },
+                { question: "Which animal is known as the King of the Jungle?", options: ["Lion", "Tiger", "Elephant", "Giraffe"], correct: 0, subject: "nature" },
+                { question: "How many continents are there?", options: ["5", "6", "7", "8"], correct: 2, subject: "geography" },
+                { question: "What is the chemical symbol for water?", options: ["H2O", "CO2", "O2", "NaCl"], correct: 0, subject: "science" }
+            ];
+
+            const characters = [
+                { char: "水", sound: "shui3", img: "shui.png", meaning: "water" },
+                { char: "木", sound: "mu4", img: "mu.png", meaning: "wood / tree" },
+                { char: "grass", sound: "cao3", img: "cao.png", meaning: "grass" },
+                { char: "口", sound: "kou3", img: "kou.png", meaning: "mouth" },
+                { char: "手", sound: "shou3", img: "shou.png", meaning: "hand" },
+                { char: "人", sound: "ren2", img: "ren.png", meaning: "person" },
+                { char: "金", sound: "jin1", img: "jin.png", meaning: "gold / metal" },
+                { char: "心", sound: "xin1", img: "xin.png", meaning: "heart" },
+                { char: "女", sound: "nu3", img: "nu.png", meaning: "woman" },
+                { char: "虫", sound: "chong2", img: "chong.png", meaning: "insect / bug" },
+                { char: "冰", sound: "bing1", img: "bing.png", meaning: "ice" },
+                { char: "火", sound: "huo3", img: "huo.png", meaning: "fire" },
+                { char: "筑", sound: "zhu4", img: "zhu.png", meaning: "to build" },
+                { char: "日", sound: "ri4", img: "ri.png", meaning: "sun / day" },
+                { char: "月", sound: "yue4", img: "yue.png", meaning: "moon / month" },
+                { char: "阜", sound: "fu4", img: "fu.png", meaning: "mound / hill" },
+                { char: "土", sound: "tu3",  img: "tu.png",   meaning: "earth / soil" },
+                { char: "雨", sound: "yu3",  img: "yu.png",   meaning: "rain" },
+                { char: "丝", sound: "si1",  img: "si.png",   meaning: "silk" },
+                { char: "山", sound: "shan1", img: "shan.png", meaning: "mountain" },
+                { char: "石", sound: "shi2", img: "shi2.png",  meaning: "stone / rock" },
+                { char: "玉", sound: "yu4",  img: "yu4.png",  meaning: "jade" },
+                { char: "欠", sound: "qian4", img: "qian.png", meaning: "open mouth" },
+                { char: "食", sound: "shi2", img: "shi22.png", meaning: "food / to eat" },
+                { char: "言", sound: "yan2", img: "yan.png",  meaning: "speech / words" },
+                { char: "子", sound: "zi3",  img: "zi.png",   meaning: "child" },
+                { char: "肉", sound: "rou4", img: "rou.png",  meaning: "meat / flesh" },
+                { char: "衣", sound: "yi1",  img: "yi.png",   meaning: "clothes" },
+                { char: "目", sound: "mu4",  img: "mu2.png",  meaning: "eye" },
+                { char: "又", sound: "you4", img: "you.png",  meaning: "hand" },
+                { char: "two hands", sound: "gong3", img: "gong2.png", meaning: "hands" },
+                { char: "the arm", sound: "gong1", img: "gong.png", meaning: "hands" },
+                { char: "页", sound: "ye4",  img: "ye.png",   meaning: "page / head" },
+                { char: "耳", sound: "er3",  img: "er.png",   meaning: "ear" }
+            ];
+            
+
+            // ---------- STATE ----------
+            let currentQuestionIndex = 0;           // used for ordered mode
+            let currentQuestion = null;              // the actual question object displayed
+            let selectedOptionIndex = null;          // index of clicked option (null if not answered yet)
+            let typed_answer = ""
+            let answerRevealed = false;              // true after user clicks an option
+            let score = 0;                           // total correct answers
+            let randomMode = true;                   // true = random with repetition, false = ordered
+
+            // For ordered mode: we keep a shuffled copy? we'll just use currentQuestionIndex in order, but start at random if random mode is off
+            // But ordered means sequential from a fixed order (the original array). We'll reset index to 0 when starting ordered.
+            // But when randomMode is ON, we pick random each time (with repetition).
+
+            // To track if test is active – we just have currentQuestion
+            let testStarted = false;
+
+            // DOM elements
+            const subjectTag = document.getElementById('subjectTag');
+            const modeLabel = document.getElementById('modeLabel');
+            const modeToggle = document.getElementById('modeToggle');
+            const questionText = document.getElementById('questionText');
+            const optionsGrid = document.getElementById('optionsGrid');
+            const feedbackMsg = document.getElementById('feedbackMsg');
+            const nextBtn = document.getElementById('nextBtn');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const resetBtn = document.getElementById('resetBtn');
+
+            // ---------- HELPER: pick random question (with repetition) ----------
+            function pickRandomQuestion() {
+                const randomIndex = Math.floor(Math.random() * questionBank.length);
+                return { ...questionBank[randomIndex] }; // shallow copy, but we don't mutate question itself
+            }
+
+            // ---------- HELPER: get next question based on mode ----------
+            function getNextQuestion() {
+                if (randomMode) {
+                    // random with repetition
+                    return pickRandomQuestion();
+                } else {
+                    // ordered mode: cycle through the bank sequentially (infinite loop, but we reset index properly)
+                    // If currentQuestionIndex >= length, wrap to 0
+                    if (currentQuestionIndex >= questionBank.length) {
+                        currentQuestionIndex = 0;
+                    }
+                    const q = { ...questionBank[currentQuestionIndex] };
+                    currentQuestionIndex = (currentQuestionIndex + 1) % questionBank.length;
+                    return q;
+                }
+            }
+
+            // ---------- RESET / START NEW TEST (keeps randomMode) ----------
+            function startNewTest() {
+                // Reset score and answer state
+                score = 0;
+                updateScoreDisplay();
+
+                // Reset ordered index to 0 (so ordered starts from beginning)
+                currentQuestionIndex = 0;
+
+                // Set the first question
+                currentQuestion = getNextQuestion();   // because randomMode: get random, ordered: first question (index 0)
+                // But careful: if ordered, getNextQuestion uses currentQuestionIndex then increments.
+                // We want first question index 0, so set currentQuestionIndex=0 before call, then call increments after.
+                // That's fine: for ordered, before first call: currentQuestionIndex=0 -> returns question[0], then sets index to 1.
+                // For random mode: just returns random, doesn't affect index.
+
+                selectedOptionIndex = null;
+                answerRevealed = false;
+
+                renderCurrentQuestion();
+                testStarted = true;
+            }
+
+            // ---------- RENDER QUESTION AND OPTIONS ----------
+            function renderCurrentQuestion() {
+                if (!currentQuestion) {
+                    questionText.textContent = 'No question available.';
+                    return;
+                }
+
+                // Update subject tag
+                subjectTag.textContent = currentQuestion.subject || 'general';
+
+                // Update question text
+                questionText.innerHTML = currentQuestion.question;
+                if(currentQuestion.type=="multiple choice"){
+                    optionsGrid.innerHTML = '';
+                    const options = currentQuestion.options;
+                    const correctIdx = currentQuestion.correct;
+
+                    options.forEach((optText, idx) => {
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'option';
+                        if (answerRevealed) {
+                            optionDiv.classList.add('disabled-option');
+                            if (idx === correctIdx) {
+                                optionDiv.classList.add('correct-answer');
+                            } else if (idx === selectedOptionIndex && idx !== correctIdx) {
+                                optionDiv.classList.add('wrong-answer');
+                            }
+                        }
+                        // text + indicator
+                        const textSpan = document.createElement('span');
+                        textSpan.innerHTML = optText;
+
+                        const indicatorSpan = document.createElement('span');
+                        indicatorSpan.className = 'indicator';
+                        if (answerRevealed) {
+                            if (idx === correctIdx) indicatorSpan.textContent = '✓';
+                            else if (idx === selectedOptionIndex && idx !== correctIdx) indicatorSpan.textContent = '✗';
+                            else indicatorSpan.textContent = '';
+                        } else {
+                            indicatorSpan.textContent = ''; // no indicator before answer
+                        }
+
+                        optionDiv.appendChild(textSpan);
+                        optionDiv.appendChild(indicatorSpan);
+
+                        // Add click listener only if answer not revealed yet
+                        if (!answerRevealed) {
+                            optionDiv.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                handleOptionClick(idx);
+                            });
+                        } else {
+                            // no click action
+                            optionDiv.style.cursor = 'default';
+                        }
+
+                        optionsGrid.appendChild(optionDiv);
+                    });
+
+                    // Update feedback and next button state
+                    if (answerRevealed) {
+                        const isCorrect = (selectedOptionIndex === currentQuestion.correct);
+                        feedbackMsg.textContent = isCorrect ? '✓ Correct! Well done.' : '✗ Oops, that’s not right.';
+                    } else {
+                        feedbackMsg.textContent = 'Click an answer to reveal the correct one.';
+                    }
+                }
+                if(currentQuestion.type=="fill in"){
+                    optionsGrid.innerHTML = '';
+                    let input_field = document.createElement("input")
+                    let submit_btn = document.createElement("div")
+                    submit_btn.className="submit_btn"
+                    let answer_field = document.createElement("div")
+                    submit_btn.textContent="submit"
+                    optionsGrid.append(input_field,submit_btn,answer_field);
+                    if (!answerRevealed) {
+                        submit_btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            let answer = input_field.value
+                            typed_answer=answer
+                            if (answerRevealed) return;          // already answered, ignore
+                            if (!currentQuestion) return;
+
+                           
+                            answerRevealed = true;
+
+                            const isCorrect = (answer == currentQuestion.correct);
+                            if (isCorrect) {
+                                score += 1;
+                            }
+                            console.log(answer,currentQuestion.correct)
+
+                            // Re-render the question with highlighted answers
+                            renderCurrentQuestion();
+
+                            // Update score immediately
+                            updateScoreDisplay();
+                           
+                        });
+                    } else {
+                        // no click action
+                        //optionDiv.style.cursor = 'default';
+                    }
+
+                    if (answerRevealed) {
+                        const isCorrect = (typed_answer == currentQuestion.correct);
+                        feedbackMsg.textContent = isCorrect ? '✓ Correct! Well done.' : '✗ Oops, that’s not right.';
+                        answer_field.textContent=currentQuestion.correct
+                    } else {
+                        feedbackMsg.textContent = 'Click an answer to reveal the correct one.';
+                    }
+                }
+                // Build options
+                
+
+                // Next button state: enabled only if answerRevealed
+                nextBtn.disabled = !answerRevealed;
+
+                // Update score display
+                updateScoreDisplay();
+            }
+
+            // ---------- HANDLE OPTION CLICK ----------
+            function handleOptionClick(clickedIdx) {
+                if (answerRevealed) return;          // already answered, ignore
+                if (!currentQuestion) return;
+
+                selectedOptionIndex = clickedIdx;
+                answerRevealed = true;
+
+                const isCorrect = (clickedIdx === currentQuestion.correct);
+                if (isCorrect) {
+                    score += 1;
+                }
+
+                // Re-render the question with highlighted answers
+                renderCurrentQuestion();
+
+                // Update score immediately
+                updateScoreDisplay();
+            }
+
+            // ---------- NEXT QUESTION ----------
+            function loadNextQuestion() {
+                if (!answerRevealed) return;   // guard
+
+                // Get next question based on current mode
+                currentQuestion = getNextQuestion();
+
+                // Reset selection and reveal state
+                selectedOptionIndex = null;
+                answerRevealed = false;
+                typed_answer = ""
+
+                // Render new question
+                renderCurrentQuestion();
+            }
+
+            // ---------- UPDATE SCORE DISPLAY ----------
+            function updateScoreDisplay() {
+                scoreDisplay.textContent = `✅ ${score} correct`;
+            }
+
+            // ---------- TOGGLE MODE ----------
+            function toggleMode() {
+                randomMode = !randomMode;
+                modeLabel.textContent = randomMode ? 'random' : 'ordered';
+                modeToggle.querySelector('span:first-child').textContent = randomMode ? '🔀' : '📋';
+
+                // When mode changes, we reset the test to avoid inconsistency, but keep score? Reset everything.
+                // For better UX, we reset the test starting from a new question according to mode.
+                resetTest();
+            }
+
+            // ---------- RESET TEST ----------
+            function resetTest() {
+                // Reset score and state
+                score = 0;
+                updateScoreDisplay();
+
+                // Reset ordered index
+                currentQuestionIndex = 0;
+
+                // Pick first question according to mode
+                if (randomMode) {
+                    currentQuestion = pickRandomQuestion();
+                } else {
+                    // ordered: first question from bank
+                    currentQuestion = { ...questionBank[0] };
+                    currentQuestionIndex = 1; // next ordered will be index 1
+                }
+
+                selectedOptionIndex = null;
+                answerRevealed = false;
+                testStarted = true;
+
+                renderCurrentQuestion();
+            }
+
+            function set_radical(index){
+                let i = index
+                let qstn = {
+                        question: `radical of ${characters[i].char} ${characters[i].sound} ${characters[i].meaning}`,
+                        options: [],
+                        correct: 0,
+                        subject: "chinese",
+                        type:"multiple choice"
+                    };
+
+                    // 1. Pick the correct position (0–3)
+                    const correct = Math.floor(Math.random() * 4);
+                    qstn.correct = correct;
+
+                    // 2. Build a pool of distractor indices, excluding the correct one
+                    const distractorPool = [];
+                    for (let k = 0; k < characters.length; k++) {
+                        if (k !== i) distractorPool.push(k);
+                    }
+
+                    // 3. Shuffle the pool so distractors are unique
+                    for (let k = distractorPool.length - 1; k > 0; k--) {
+                        const r = Math.floor(Math.random() * (k + 1));
+                        [distractorPool[k], distractorPool[r]] = [distractorPool[r], distractorPool[k]];
+                    }
+
+                    // 4. Fill 4 options
+                    let distractorsUsed = 0;
+                    for (let j = 0; j < 4; j++) {
+                        if (j === correct) {
+                            qstn.options.push(
+                                `<img width=100 height=100 src='radics/${characters[i].img}'>`
+                            );
+                        } else {
+                            const d = distractorPool[distractorsUsed++];
+                            qstn.options.push(
+                                `<img width=100 height=100 src='radics/${characters[d].img}'>`
+                            );
+                        }
+                    }
+                    return qstn
+
+            }
+            function set_chinese_sound_question(index){
+                let i = index
+                let qstn = {
+                        question: `the sound of <img width=100 height=100 src='radics/${characters[i].img}'>`,
+                        options: [],
+                        correct: 0,
+                        subject: "chinese",
+                        type:"multiple choice"
+                    };
+
+                    // 1. Pick the correct position (0–3)
+                    const correct = Math.floor(Math.random() * 4);
+                    qstn.correct = correct;
+
+                    // 2. Build a pool of distractor indices, excluding the correct one
+                    const distractorPool = [];
+                    for (let k = 0; k < characters.length; k++) {
+                        if (k !== i) distractorPool.push(k);
+                    }
+
+                    // 3. Shuffle the pool so distractors are unique
+                    for (let k = distractorPool.length - 1; k > 0; k--) {
+                        const r = Math.floor(Math.random() * (k + 1));
+                        [distractorPool[k], distractorPool[r]] = [distractorPool[r], distractorPool[k]];
+                    }
+
+                    // 4. Fill 4 options
+                    let distractorsUsed = 0;
+                    for (let j = 0; j < 4; j++) {
+                        if (j === correct) {
+                            qstn.options.push(
+                                `${characters[i].sound} (${characters[i].meaning})`
+                            );
+                        } else {
+                            const d = distractorPool[distractorsUsed++];
+                            qstn.options.push(
+                                `${characters[d].sound} (${characters[d].meaning})`
+                            );
+                        }
+                    }
+                    return qstn
+
+            }
+
+            function set_chinese_fillin_question(index){
+                let i = index
+                let qstn = {
+                        question: `the sound of <img width=100 height=100 src='radics/${characters[i].img}'>`,
+                        correct: `${characters[i].sound}`,
+                        subject: "chinese",
+                        type:"fill in"
+                    };
+
+                    return qstn
+
+            }
+
+            // ---------- INITIAL SETUP ----------
+            function init() {
+                // Set mode label
+                modeLabel.textContent = randomMode ? 'random' : 'ordered';
+                modeToggle.querySelector('span:first-child').textContent = randomMode ? '🔀' : '📋';
+
+                // Start with a random question
+                currentQuestion = pickRandomQuestion();
+                currentQuestionIndex = 0;   // reset ordered counter (will be used if switch to ordered, but resetTest handles)
+                selectedOptionIndex = null;
+                answerRevealed = false;
+                testStarted = true;
+
+                renderCurrentQuestion();
+                updateScoreDisplay();
+
+                // Event listeners
+                nextBtn.addEventListener('click', loadNextQuestion);
+                resetBtn.addEventListener('click', resetTest);
+                modeToggle.addEventListener('click', toggleMode);
+            }
+
+            function set_up_chinese() {
+                questionBank = [];
+                for (let i = 0; i < characters.length; i++) {
+                    let qstn = set_radical(i)
+                    let qstn2 = set_chinese_sound_question(i)
+                    let qstn3 = set_chinese_fillin_question(i)
+                    questionBank.push(qstn);
+                    questionBank.push(qstn2);
+                    questionBank.push(qstn3)
+                }
+            }
+
+            function set_up_hsk(){
+                questionBank = [];
+                let words = [
+                    {char:"水",sound:"shui3",meaning:"water"},
+                    {char: "口", sound: "kou3", img: "kou.png", meaning: "mouth" },
+                    { char: "手", sound: "shou3", img: "shou.png", meaning: "hand" },
+                    { char: "人", sound: "ren2", img: "ren.png", meaning: "person" },
+                    { char: "金", sound: "jin1", img: "jin.png", meaning: "gold / metal" },
+                    { char: "心", sound: "xin1", img: "xin.png", meaning: "heart" },
+                    { char: "女", sound: "nu3", img: "nu.png", meaning: "woman" },
+                    { char: "虫", sound: "chong2", img: "chong.png", meaning: "insect / bug" },
+                ]
+                for (let i = 0; i < words.length; i++) {
+                    let qstn = {
+                        question: `the sound of ${words[i].char}`,
+                        options: [],
+                        correct: 0,
+                        subject: "chinese",
+                        type:"multiple choice"
+                    };
+
+                    // 1. Pick the correct position (0–3)
+                    const correct = Math.floor(Math.random() * 4);
+                    qstn.correct = correct;
+
+                    // 2. Build a pool of distractor indices, excluding the correct one
+                    const distractorPool = [];
+                    for (let k = 0; k < words.length; k++) {
+                        if (k !== i) distractorPool.push(k);
+                    }
+
+                    // 3. Shuffle the pool so distractors are unique
+                    for (let k = distractorPool.length - 1; k > 0; k--) {
+                        const r = Math.floor(Math.random() * (k + 1));
+                        [distractorPool[k], distractorPool[r]] = [distractorPool[r], distractorPool[k]];
+                    }
+
+                    // 4. Fill 4 options
+                    let distractorsUsed = 0;
+                    for (let j = 0; j < 4; j++) {
+                        if (j === correct) {
+                            qstn.options.push(
+                                `${words[i].sound} (${words[i].meaning})`
+                            );
+                        } else {
+                            const d = distractorPool[distractorsUsed++];
+                            qstn.options.push(
+                                `${words[d].sound} (${words[d].meaning})`
+                            );
+                        }
+                    }
+                    questionBank.push(qstn);
+                }
+            }
+
+            // start
+            //set_up_chinese()
+            set_up_hsk()
+            init();
+
+            function speakText(text) {
+                const utterance = new SpeechSynthesisUtterance(text); // Create speech object
+                utterance.rate = 1; // Speed (0.5 slower, 2 faster)
+                utterance.pitch = 1; // Pitch (0 lower, 2 higher)
+                utterance.volume = 0.7; // Volume (0 to 1)
+                const voices = speechSynthesis.getVoices(); // Get available voices
+                utterance.voice = voices[0]; // Select a voice
+                window.speechSynthesis.speak(utterance); // Speak the text
+            }
+            // Example usage
+            //speakText("水. Hello, welcome to this tutorial! 水");
+        })();
+    </script>
+</body>
+</html>
