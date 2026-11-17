@@ -3,6 +3,7 @@ function create_multiple_choice(data,index){
             question: `${data[index].question}`,
             options: [],
             correct: 0,
+            description:data[index].description?data[index].description:"",
             type:"multiple choice"
         };
 
@@ -43,6 +44,7 @@ function create_fillin(data,index){
     let qstn = {
         question: `${data[index].question}`,
         correct: `${data[index].answer}`,
+        description:data[index].description?data[index].description:"",
         type:"fill in"
     };
 

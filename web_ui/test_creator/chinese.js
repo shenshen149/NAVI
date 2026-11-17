@@ -30,10 +30,4 @@ let hsk = {
         { question: "漂亮", answer: "piao4 liang5", description: "pretty / beautiful" }
     ]
 }
-
-let chinese_survey = {
-    name:"chinese survey",
-    questions:[],
-
-}
 hsk.questions = create_questions(hsk.data)

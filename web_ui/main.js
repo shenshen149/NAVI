@@ -19,7 +19,7 @@ const localstorage_provider = {
         let data = JSON.parse(sessionStorage.getItem("NAVI_USER_DATA"))
         return data
     },
-   async get_user_notes(){
+    async get_user_notes(){
         let data = await this.get_user_data()
         return data.notes
     },

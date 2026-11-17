@@ -11,6 +11,7 @@
     <div id="filelist"></div>
     <input class="btn" type="file" id="post-files" multiple>
     <button class="btn" onclick="upload()">Upload</button>
+    <script src="main.js"></script>
     <script>
         async function get_data(){
             try{
@@ -82,7 +83,7 @@
                     download_btn.textContent = "download";download_btn.className="btn"
                     download_btn.onclick = () => {
                         const a = document.createElement("a");
-                        a.href = "files/" + data[i].path;
+                        a.href = `${sessionStorage.getItem("navi_server_url")}/files/${data[i].path}`;
                         a.download = data[i].path.split("/").pop(); // filename
                         document.body.appendChild(a);
                         a.click();

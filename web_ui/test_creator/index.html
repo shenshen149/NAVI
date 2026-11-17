@@ -31,14 +31,16 @@
     <script src="helpers.js"></script>
     <script src="radicals.js"></script>
     <script src="chinese.js"></script>
+    <script src="chinesesurvey.js"></script>
     <script>
         let question_list=[]
         let selected_courses=[]
-        let format = "ordered"
+        let format = "random"
         let current_question_index=-1
         let courses = [
             radical_course,
-            hsk
+            hsk,
+            chinese_survey
         ]
         function render_course_list(){
             selected_courses=[]
@@ -66,6 +68,7 @@
             }
         }
         function render_question(data){
+            console.log(data)
             document.getElementById("question_elem").innerHTML=""
             let next_btn = document.createElement("button")
             next_btn.className="btn"
@@ -86,10 +89,10 @@
                         if(state=="answered")return
                         if(i==data.correct){
                             option_btn.style.backgroundColor="green"
-                            answer.innerHTML=`correct: ${data.options[data.correct]}`
+                            answer.innerHTML=`correct: ${data.options[data.correct]} (${data.description?data.description:''})`
                         }else{
                             option_btn.style.backgroundColor="red"
-                            answer.innerHTML=`incorrect: ${data.options[data.correct]}`
+                            answer.innerHTML=`incorrect: ${data.options[data.correct]} (${data.description?data.description:''})`
                         }
                         next_btn.disabled=false
                         state="answered"
@@ -112,10 +115,10 @@
                     if(state=="answered")return
                     if(input.value==data.correct){
                         submit.style.backgroundColor="green"
-                        answer.innerHTML=`correct: ${data.correct}`
+                        answer.innerHTML=`correct: ${data.correct} (${data.description?data.description:''})`
                     }else{
                         submit.style.backgroundColor="red"
-                        answer.innerHTML=`incorrect: ${data.correct}`
+                        answer.innerHTML=`incorrect: ${data.correct} (${data.description?data.description:''})`
                     }
                     next_btn.disabled=false
                     state="answered"
@@ -123,6 +126,47 @@
                 
                 document.getElementById("question_elem").append(question,input,submit,answer)
             }
+            if(data.type=="multiple answer"){
+                let question = document.createElement("div")
+                question.innerHTML=`${data.question}`
+                let answer = document.createElement("div")
+                let inputs = document.createElement("div")
+                let input_list = []
+                for(let i=0;i<data.answers.length;i++){
+                    let input = document.createElement("input")
+                    input.className="inp"
+                    inputs.append(input)
+                    input_list.push(input)
+                }
+                let submit = document.createElement("button")
+                submit.className="btn"
+                submit.textContent="submit"
+                submit.onclick=()=>{
+                    if(state=="answered")return
+                    let user_answers = []
+                    for(let i=0;i<input_list.length;i++){
+                        user_answers.push(input_list[i].value)
+                    }
+                    let ans = ""
+                    for(let i=0;i<data.answers.length;i++){
+                        ans+=data.answers[i]+", "
+                    }
+                    const a = user_answers.sort()
+                    const b = data.answers.sort()
+                    if(a.every((val,i)=>val===b[i])){
+                        submit.style.backgroundColor="green"
+                        answer.innerHTML=`correct: ${ans} (${data.description?data.description:''})`
+                    }else{
+                        submit.style.backgroundColor="red"
+                        answer.innerHTML=`incorrect: ${ans} (${data.description?data.description:''})`
+                    }
+                    next_btn.disabled=false
+                    state="answered"
+                }
+                
+                document.getElementById("question_elem").append(question,inputs,submit,answer)
+            }
+            if(data.type=="multiple select"){}
             document.getElementById("question_elem").append(next_btn)
         }
         function start_test(){
@@ -146,7 +190,7 @@
                 render_question(question_list[current_question_index])
             }
         }
-        document.getElementById("format").textContent="ordered"
+        document.getElementById("format").textContent="random"
         document.getElementById("format").onclick=()=>{
             if(format=="ordered"){
                 format="random"
