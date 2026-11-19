@@ -8,25 +8,14 @@
 <body>
     <div id="nav"></div>
     <div id="messages"></div>
-    <input type="text" id="message-input">
+    <input class="inp" type="text" id="message-input">
     <button class="btn" onclick="submit_data()">submit</button>
     <script src="main.js"></script>
     <script>
         let IP = sessionStorage.getItem("ip")
         async function render_data() {
             try{
-                console.log("rendering data")
-                const res = await fetch(`http://${IP}/get_quick_notes`,
-                    {
-                        method: 'GET'
-                    },
-                    
-                );
-                const data = await res.json();
-                if(data.error){
-                    set_error(data.error)
-                    return
-                }
+               let data = await provider.get_quick_messages()
                 document.getElementById("messages").innerHTML = ""
                 for (let i = 0; i < data.length; i++) {
                     let div = document.createElement("div")
@@ -43,18 +32,7 @@
         async function submit_data() {
             let text = document.getElementById("message-input").value
             try {
-                const response = await fetch(`http://${IP}/create_quick_note`, {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({text:text,date:new Date().toISOString()})
-                });
-                
-                if (!response.ok) throw new Error('Failed to create post');
-                
-                const data = await response.json();
-                console.log('Success:', data);
+                provider.create_quick_message(text)
             } catch (error) {
                 console.error('Error:', error);
                 alert('Error creating post: ' + error.message);

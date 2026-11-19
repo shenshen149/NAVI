@@ -54,7 +54,7 @@
 
                     //open btn
                     let open = document.createElement("button");open.textContent="open";open.className="btn"
-                    open.onclick=()=>{window.location.href="files/"+data[i].path}
+                    open.onclick=()=>{window.location.href=`${sessionStorage.getItem("navi_server_url")}/files/${data[i].path}`}
 
 
                     //view img btn

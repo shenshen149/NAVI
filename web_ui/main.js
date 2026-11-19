@@ -2,13 +2,14 @@
 let provider = null
 
 function set_url(url){
+    if(!document.getElementById("server_url"))return
     document.getElementById("server_url").innerHTML=url
     sessionStorage.setItem("navi_server_url",url)
 }
 const localstorage_provider = {
     async get_user_data(){
-        if(!sessionStorage.getItem("NAVI_USER_DATA")){
-            sessionStorage.setItem("NAVI_USER_DATA",JSON.stringify({
+        if(!localStorage.getItem("NAVI_USER_DATA")){
+            localStorage.setItem("NAVI_USER_DATA",JSON.stringify({
                 notes:[{id:0,title:"local note",text:"this is my local note"}],
                 quick_messages:[],
                 checklists:[
@@ -16,7 +17,7 @@ const localstorage_provider = {
                 ]
             }))
         }
-        let data = JSON.parse(sessionStorage.getItem("NAVI_USER_DATA"))
+        let data = JSON.parse(localStorage.getItem("NAVI_USER_DATA"))
         return data
     },
     async get_user_notes(){
@@ -24,19 +25,19 @@ const localstorage_provider = {
         return data.notes
     },
     async create_user_note(note){
-        let data = JSON.parse(sessionStorage.getItem("NAVI_USER_DATA"))
+        let data = JSON.parse(localStorage.getItem("NAVI_USER_DATA"))
         note.id = data.notes.length
         data.notes.push(note)
-        sessionStorage.setItem("NAVI_USER_DATA",JSON.stringify(data))
+        localStorage.setItem("NAVI_USER_DATA",JSON.stringify(data))
     },
     async delete_user_note(note){
-        let data = JSON.parse(sessionStorage.getItem("NAVI_USER_DATA"))
+        let data = JSON.parse(localStorage.getItem("NAVI_USER_DATA"))
         for(let i=0;i<data.notes.length;i++){
             if(data.notes[i]==note){
                 data.notes.splice(i,1)
             }
         }
-        sessionStorage.setItem("NAVI_USER_DATA",JSON.stringify(data))
+        localStorage.setItem("NAVI_USER_DATA",JSON.stringify(data))
     },
     async get_checklists(){
         let data = await this.get_user_data()
@@ -45,7 +46,7 @@ const localstorage_provider = {
     async create_checklist(name){
         let data = await this.get_user_data()
         data.checklists.push({name:name,items:[]})
-        sessionStorage.setItem("NAVI_USER_DATA",JSON.stringify(data))
+        localStorage.setItem("NAVI_USER_DATA",JSON.stringify(data))
     },
     async add_check(name,item){
         let data = await this.get_user_data()
@@ -55,14 +56,23 @@ const localstorage_provider = {
                 checklists[i].items.push(item)
             }
         }
-        sessionStorage.setItem("NAVI_USER_DATA",JSON.stringify(data))
-    }
+        localStorage.setItem("NAVI_USER_DATA",JSON.stringify(data))
+    },
+    async get_quick_messages(){
+        let data = await this.get_user_data()
+        return data.quick_messages
+    },
+    async create_quick_message(msg){
+        let data = JSON.parse(localStorage.getItem("NAVI_USER_DATA"))
+        data.quick_messages.push({text:msg,date_created:new Date().toISOString()})
+        localStorage.setItem("NAVI_USER_DATA",JSON.stringify(data))
+    },
 }
 const server_provider = {
     async get_user_notes(){
         try{
             console.log("rendering data")
-            const res = await fetch(`${sessionStorage.getItem("navi_server_url")}/get_notes`,
+            const res = await fetch(`${localStorage.getItem("navi_server_url")}/get_notes`,
                 {
                     method: 'GET'
                 },
@@ -82,7 +92,7 @@ const server_provider = {
     },
     async create_user_note(note){
         try {
-            const response = await fetch(`${sessionStorage.getItem("navi_server_url")}/create_note`, {
+            const response = await fetch(`${localStorage.getItem("navi_server_url")}/create_note`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
@@ -101,7 +111,7 @@ const server_provider = {
     },
     async delete_user_note(note){
         try {
-            const response = await fetch(`${sessionStorage.getItem("navi_server_url")}/delete_note`, {
+            const response = await fetch(`${localStorage.getItem("navi_server_url")}/delete_note`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
@@ -117,12 +127,52 @@ const server_provider = {
             console.error('Error:', error);
             alert('Error creating post: ' + error.message);
         }
-    }
+    },
+    async get_quick_messages(){
+        try{
+            console.log("rendering data")
+            const res = await fetch(`${localStorage.getItem("navi_server_url")}/get_quick_notes`,
+                {
+                    method: 'GET'
+                },
+                
+            );
+            const data = await res.json();
+            if(data.error){
+                set_error(data.error)
+                return
+            }
+            console.log(data)
+            return data
+            
+        }catch (err){
+            console.log(err)
+        }
+    },
+    async reate_quick_message(msg){
+         try {
+            const response = await fetch(`${localStorage.getItem("navi_server_url")}/create_quick_note`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({text:msg,date:new Date().toISOString()})
+            });
+            
+            if (!response.ok) throw new Error('Failed to create post');
+            
+            const data = await response.json();
+            console.log('Success:', data);
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error creating post: ' + error.message);
+        }
+    },
 }
 
 // ---- SAVE DATA AS JSON FILE ----
 function save_to_json() {
-    let data = JSON.parse(sessionStorage.getItem("NAVI_USER_DATA"))
+    let data = JSON.parse(localStorage.getItem("NAVI_USER_DATA"))
     const json = JSON.stringify(data, null, 2);
     const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -153,7 +203,7 @@ function load_json_file(){
             const loadedData = JSON.parse(reader.result);
 
             // Save to localStorage
-            sessionStorage.setItem("NAVI_USER_DATA",JSON.stringify(loadedData))
+            localStorage.setItem("NAVI_USER_DATA",JSON.stringify(loadedData))
             alert("data loaded")
         } catch (e) {
             alert("Invalid save file");

@@ -1,19 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const sqlite3 = require('sqlite3').verbose();
+//const sqlite3 = require('sqlite3').verbose();
 const multer = require('multer');
 const fs = require('fs');
 const os = require('os');
 
 const app = express();
-const db = new sqlite3.Database('mydatabase.db', (err) => {
-  if (err) {
-      console.error('Error opening database:', err.message);
-    } else {
-      console.log('Connected to the SQLite database.');
-  } 
-});
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, "files"));
@@ -119,54 +112,13 @@ fs.readdir('./files/', (err, files) => {
 
 app.get('/files',async(req,res)=>{
     try {
-        db.all("SELECT * FROM files", (err, rows) => {
-          if (err) {
-              console.error(err.message);
-          } else {
-              res.json(rows)
-          }
-        });
+        res.json(all_files)
     } catch (err) {
         console.error(err);
     }
 });
 
 app.post('/upload', upload.array('files'), async (req, res) => {
-    const fileNames = [];
-
-    // req.files is an array when using upload.array()
-    for (let i = 0; i < req.files.length; i++) {
-        const file = req.files[i];
-        fileNames.push(file.filename);
-        
-        let type;
-        if (file.mimetype.startsWith('image/')) {
-            type = 'image';
-        } else if (file.mimetype.startsWith('video/')) {
-            type = 'video';
-        } else if (
-            file.mimetype === 'application/pdf' ||
-            file.mimetype === 'application/msword' ||
-            file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-            file.mimetype === 'application/vnd.ms-excel' ||
-            file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-            file.mimetype === 'application/vnd.ms-powerpoint' ||
-            file.mimetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
-            file.mimetype === 'text/plain' ||
-            file.mimetype === 'text/csv'
-        ) {
-            type = 'document';
-        } else {
-            type = 'other';
-        }
-        
-        db.run(
-            `INSERT INTO files (path, type) VALUES (?, ?)`,
-            [file.filename, type]
-        );
-    }
-
-    console.log(fileNames);
     res.json({message:'files uploaded'})
 });
 
@@ -211,8 +163,6 @@ db.get("SELECT * FROM users WHERE id = ?", [1], (err, row) => {
        console.log(row);
    }
 });*/
-
-init_()
 const PORT = 3050
 app.listen(3050, () => {
   console.log(`Server running on port ${PORT}`);

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>flappy · dodge the floaters</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        body {
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            touch-action: pan-y; 
+        }
+
+        .game-wrapper {
+            background: #1e293b;
+            border-radius: 2rem;
+            padding: 1.2rem 1.2rem 1.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            width: fit-content;
+            margin: 0 auto;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-width: 340px;
+            aspect-ratio: 360 / 600;
+            border-radius: 20px;
+            background: #0b1120;
+            box-shadow: inset 0 0 0 2px #3b4b62, 0 10px 20px rgba(0,0,0,0.4);
+            touch-action: none;  /* prevents scroll/pinch on canvas */
+            cursor: pointer;
+        }
+
+        .panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 0.2rem;
+        }
+
+        .score {
+            background: #0b1120;
+            color: #b9e6ff;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            border: 1px solid #3b4b62;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        button {
+            background: #38bdf8;
+            border: none;
+            border-radius: 60px;
+            padding: 0.75rem 2rem;
+            font-weight: 800;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            color: #0b1120;
+            text-transform: uppercase;
+            box-shadow: 0 8px 0 #0369a1, 0 10px 20px rgba(0,0,0,0.3);
+            transition: all 0.07s ease;
+            touch-action: manipulation;
+            cursor: pointer;
+            flex: 1;
+            max-width: 200px;
+            text-align: center;
+            border: 1px solid #7dd3fc;
+        }
+
+        button:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #0369a1, 0 8px 16px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            transform: translateY(3px);
+            box-shadow: 0 5px 0 #0369a1;
+            pointer-events: none;
+        }
+
+        .hint {
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            margin-left: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+<div class="game-wrapper">
+    <canvas id="gameCanvas" width="360" height="600"></canvas>
+    <div class="panel">
+        <div class="score" id="scoreDisplay">0</div>
+        <button id="flapBtn">flap</button>
+    </div>
+    <div class="hint">tap screen or button to flap ↻</div>
+</div>
+<script>
+    (function() {
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const flapBtn = document.getElementById('flapBtn');
+
+        // ---------- FIXED DIMENSIONS (canvas internal size 360x600) ----------
+        const CW = 360;
+        const CH = 600;
+
+        // ---------- GAME STATE ----------
+        let gameActive = false;
+        let score = 0;
+
+        // ---------- PLAYER (a cute floating orb / bird) ----------
+        const player = {
+            x: 70,
+            y: 300,
+            radius: 16,
+            vy: 0,
+            gravity: 0.45,
+            flapStrength: -6.5,
+            // for smooth rotation effect (optional)
+        };
+
+        // ---------- OBSTACLES (floating barriers) ----------
+        let obstacles = [];
+        const OBSTACLE_WIDTH = 42;
+        const GAP_HEIGHT = 150;         // vertical opening
+        const OBSTACLE_SPEED = 2.3;     // px per frame (leftwards)
+        const MIN_OBSTACLE_INTERVAL = 100;  // frames between spawns (approx)
+        let frameCounter = 0;
+        let spawnRate = 100;            // frames
+
+        // ---------- SCROLLING STARS (visual flair) ----------
+        let stars = [];
+        for (let i = 0; i < 40; i++) {
+            stars.push({
+                x: Math.random() * CW,
+                y: Math.random() * CH,
+                size: Math.random() * 1.8 + 0.5,
+                speed: Math.random() * 0.3 + 0.15,
+            });
+        }
+
+        // ---------- RESET FUNCTION ----------
+        function resetGame() {
+            gameActive = false;
+            score = 0;
+            scoreDisplay.textContent = '0';
+            player.y = 300;
+            player.vy = 0;
+            obstacles = [];
+            frameCounter = 0;
+            spawnRate = 100;
+            // reset stars positions (optional)
+            for (let s of stars) {
+                s.x = Math.random() * CW;
+                s.y = Math.random() * CH;
+            }
+            // draw initial state
+            draw();
+        }
+
+        // ---------- START / RESTART ----------
+        function startGame() {
+            resetGame();
+            gameActive = true;
+            // give a tiny upward nudge so it doesn't feel dead
+            player.vy = player.flapStrength * 0.6;
+            // pre-fill a couple of obstacles? no, let them spawn naturally, but we want immediate challenge
+            // spawn one obstacle after a short delay? we'll handle in update via frameCounter
+            // set frameCounter so first obstacle appears soon
+            frameCounter = 40; // first spawn after ~40 frames (0.6s)
+            // also ensure no leftover
+        }
+
+        // ---------- FLAP ACTION ----------
+        function flap() {
+            if (!gameActive) {
+                startGame();
+                return;
+            }
+            player.vy = player.flapStrength;
+            // small visual feedback (canvas animation already updates)
+        }
+
+        // ---------- COLLISION DETECTION (circle vs rect) ----------
+        function circleRectCollision(cx, cy, cr, rx, ry, rw, rh) {
+            // closest point on rectangle to circle center
+            const closestX = Math.max(rx, Math.min(cx, rx + rw));
+            const closestY = Math.max(ry, Math.min(cy, ry + rh));
+            const dx = cx - closestX;
+            const dy = cy - closestY;
+            return (dx * dx + dy * dy) < cr * cr;
+        }
+
+        // ---------- UPDATE GAME (called each frame if active) ----------
+        function update() {
+            if (!gameActive) return;
+
+            // 1. player physics
+            player.vy += player.gravity;
+            player.y += player.vy;
+
+            // boundaries: ceiling & floor
+            // ceiling: bounce / stop (if hits top, push down)
+            if (player.y - player.radius < 0) {
+                player.y = player.radius;
+                player.vy = 1.2; // bounce a little
+            }
+            // floor: game over
+            if (player.y + player.radius > CH) {
+                gameActive = false;
+                // clamp to floor for drawing
+                player.y = CH - player.radius;
+                return; // stop updating
+            }
+
+            // 2. move obstacles & collision
+            // iterate backwards because we might splice
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obs = obstacles[i];
+                obs.x -= OBSTACLE_SPEED;
+
+                // remove if off screen left
+                if (obs.x + obs.width < 0) {
+                    obstacles.splice(i, 1);
+                    continue;
+                }
+
+                // collision detection with player (circle vs two rectangles)
+                // top rect
+                const topRect = {
+                    x: obs.x,
+                    y: 0,
+                    w: obs.width,
+                    h: obs.gapY
+                };
+                // bottom rect
+                const bottomRect = {
+                    x: obs.x,
+                    y: obs.gapY + obs.gapHeight,
+                    w: obs.width,
+                    h: CH - (obs.gapY + obs.gapHeight)
+                };
+
+                if (circleRectCollision(player.x, player.y, player.radius,
+                        topRect.x, topRect.y, topRect.w, topRect.h) ||
+                    circleRectCollision(player.x, player.y, player.radius,
+                        bottomRect.x, bottomRect.y, bottomRect.w, bottomRect.h)) {
+                    gameActive = false;
+                    return;
+                }
+
+                // scoring: if obstacle passes player x and not scored yet
+                if (!obs.scored && obs.x + obs.width < player.x) {
+                    obs.scored = true;
+                    score++;
+                    scoreDisplay.textContent = score;
+                }
+            }
+
+            // 3. spawn obstacles
+            frameCounter++;
+            if (frameCounter >= spawnRate) {
+                // random gap position
+                const minGapY = 60;
+                const maxGapY = CH - GAP_HEIGHT - 60;
+                const gapY = Math.floor(Math.random() * (maxGapY - minGapY + 1)) + minGapY;
+
+                obstacles.push({
+                    x: CW,
+                    width: OBSTACLE_WIDTH,
+                    gapY: gapY,
+                    gapHeight: GAP_HEIGHT,
+                    scored: false
+                });
+
+                // reset counter with slight random variation
+                frameCounter = 0;
+                // increase difficulty slightly: reduce interval a bit (min 60)
+                spawnRate = Math.max(60, spawnRate - 1.2);
+            }
+
+            // 4. update stars (background)
+            for (let s of stars) {
+                s.x -= s.speed;
+                if (s.x < 0) {
+                    s.x = CW;
+                    s.y = Math.random() * CH;
+                }
+            }
+        }
+
+        // ---------- DRAW EVERYTHING ----------
+        function draw() {
+            ctx.clearRect(0, 0, CW, CH);
+
+            // ----- background gradient -----
+            const grad = ctx.createLinearGradient(0, 0, 0, CH);
+            grad.addColorStop(0, '#0b1120');
+            grad.addColorStop(0.7, '#14212e');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, CW, CH);
+
+            // ----- stars (twinkling background) -----
+            for (let s of stars) {
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 240, 200, ${0.5 + Math.sin(s.x * 0.05) * 0.3})`;
+                ctx.fill();
+            }
+
+            // ----- draw obstacles (floating pillars) -----
+            for (let obs of obstacles) {
+                // top pillar
+                const topGrad = ctx.createLinearGradient(obs.x, 0, obs.x + obs.width, 0);
+                topGrad.addColorStop(0, '#4f6f8f');
+                topGrad.addColorStop(0.5, '#7e9ec0');
+                topGrad.addColorStop(1, '#2c4058');
+                ctx.fillStyle = topGrad;
+                ctx.shadowColor = '#a0d0ff';
+                ctx.shadowBlur = 12;
+                ctx.beginPath();
+                ctx.roundRect(obs.x, 0, obs.width, obs.gapY, 8);
+                ctx.fill();
+
+                // bottom pillar
+                const bottomY = obs.gapY + obs.gapHeight;
+                const bottomGrad = ctx.createLinearGradient(obs.x, bottomY, obs.x + obs.width, CH);
+                bottomGrad.addColorStop(0, '#2c4058');
+                bottomGrad.addColorStop(0.5, '#7e9ec0');
+                bottomGrad.addColorStop(1, '#4f6f8f');
+                ctx.fillStyle = bottomGrad;
+                ctx.beginPath();
+                ctx.roundRect(obs.x, bottomY, obs.width, CH - bottomY, 8);
+                ctx.fill();
+
+                // edge glow
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#9ac7ff';
+                ctx.strokeStyle = '#b3d9ff';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.roundRect(obs.x, 0, obs.width, obs.gapY, 8);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.roundRect(obs.x, bottomY, obs.width, CH - bottomY, 8);
+                ctx.stroke();
+            }
+
+            // reset shadow (avoid messing player)
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = 'transparent';
+
+            // ----- draw player (flapping orb with eyes) -----
+            // glow
+            ctx.shadowColor = '#60c0ff';
+            ctx.shadowBlur = 24;
+            // body
+            const playerGrad = ctx.createRadialGradient(
+                player.x - 6, player.y - 6, 4,
+                player.x, player.y, player.radius + 6
+            );
+            playerGrad.addColorStop(0, '#f0f9ff');
+            playerGrad.addColorStop(0.6, '#38bdf8');
+            playerGrad.addColorStop(1, '#0369a1');
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+            ctx.fillStyle = playerGrad;
+            ctx.fill();
+
+            // eyes (white with pupils looking direction of velocity)
+            const eyeOffsetX = player.vy * 0.8; // look up/down a bit
+            // left eye
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            ctx.arc(player.x - 6, player.y - 4, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(player.x - 6 + eyeOffsetX * 0.5, player.y - 4 + Math.max(-2, Math.min(2, player.vy * 0.3)), 2.2, 0, Math.PI * 2);
+            ctx.fillStyle = '#0b1120';
+            ctx.fill();
+
+            // right eye
+            ctx.beginPath();
+            ctx.arc(player.x + 6, player.y - 4, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(player.x + 6 + eyeOffsetX * 0.5, player.y - 4 + Math.max(-2, Math.min(2, player.vy * 0.3)), 2.2, 0, Math.PI * 2);
+            ctx.fillStyle = '#0b1120';
+            ctx.fill();
+
+            // little wing / accent
+            ctx.beginPath();
+            ctx.ellipse(player.x - 10, player.y + 4, 6, 4, -0.3, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffd966';
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = '#ffb347';
+            ctx.fill();
+
+            // reset shadow
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = 'transparent';
+
+            // ----- game over overlay if not active & game had started -----
+            if (!gameActive && score > 0) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(0, 0, CW, CH);
+                ctx.font = 'bold 34px system-ui, sans-serif';
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 16;
+                ctx.textAlign = 'center';
+                ctx.fillText('GAME OVER', CW / 2, CH / 2 - 30);
+                ctx.font = 'bold 26px system-ui, sans-serif';
+                ctx.fillStyle = '#b9e6ff';
+                ctx.fillText('score: ' + score, CW / 2, CH / 2 + 40);
+                ctx.shadowBlur = 0;
+            } else if (!gameActive && score === 0) {
+                // welcome screen / ready state
+                ctx.font = 'bold 24px system-ui, sans-serif';
+                ctx.fillStyle = '#b9e6ff';
+                ctx.shadowColor = '#0284c7';
+                ctx.shadowBlur = 16;
+                ctx.textAlign = 'center';
+                ctx.fillText('TAP TO START', CW / 2, CH / 2);
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        // helper for rounded rect (Canvas API)
+        CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+            if (w < 2 * r) r = w / 2;
+            if (h < 2 * r) r = h / 2;
+            this.moveTo(x + r, y);
+            this.lineTo(x + w - r, y);
+            this.quadraticCurveTo(x + w, y, x + w, y + r);
+            this.lineTo(x + w, y + h - r);
+            this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            this.lineTo(x + r, y + h);
+            this.quadraticCurveTo(x, y + h, x, y + h - r);
+            this.lineTo(x, y + r);
+            this.quadraticCurveTo(x, y, x + r, y);
+            this.closePath();
+            return this;
+        };
+
+        // ---------- ANIMATION LOOP ----------
+        function gameLoop() {
+            if (gameActive) {
+                update();
+            }
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ---------- EVENT LISTENERS ----------
+        // button flap
+        flapBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            flap();
+        });
+
+        // tap on canvas also flaps
+        canvas.addEventListener('click', (e) => {
+            e.preventDefault();
+            flap();
+        });
+
+        // touch events for mobile: prevent double firing
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            flap();
+        }, { passive: false });
+
+        // Prevent context menu on long press
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        // Initialize game (show welcome screen)
+        resetGame();
+        // Start the loop
+        gameLoop();
+
+        // If the page is loaded, ensure canvas is focused / ready
+        window.addEventListener('load', () => {
+            // small adjustment: show start hint
+        });
+    })();
+</script>
+</body>
+</html>
