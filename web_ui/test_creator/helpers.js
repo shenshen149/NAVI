@@ -63,6 +63,23 @@ function create_questions(data){
     return questionlist
 }
 
+function create_fillin_questions(data){
+    let questionlist = []
+    for (let i = 0; i < data.length; i++) {
+        let qstn2 = create_fillin(data,i)
+        questionlist.push(qstn2);
+    }
+    return questionlist
+}
+function create_mcq_questions(data){
+    let questionlist = []
+    for (let i = 0; i < data.length; i++) {
+        let qstn = create_multiple_choice(data,i)
+        questionlist.push(qstn);
+    }
+    return questionlist
+}
+
 function export_course(){
     let data = selected_courses[0]
     if(!data)return
@@ -86,21 +103,35 @@ function export_course(){
 
 function import_course(){
     let file_input = document.getElementById("import_file")
-    const file = file_input.files[0];
-    if (!file) return;
+    const files = file_input.files;
+    if (!files || files.length === 0) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-        try {
-            const loadedData = JSON.parse(reader.result);
+    let loadedCount = 0;
+    let errorCount = 0;
+    const totalFiles = files.length;
 
-            // Save to localStorage
-            courses.push(loadedData)
-            alert("data loaded")
-            render_course_list()
-        } catch (e) {
-            alert("Invalid save file");
-        }
+    // Helper to run after all files are processed
+    const onAllDone = () => {
+        if (loadedCount > 0) render_course_list();
+        alert(`Loaded ${loadedCount} file(s).` + (errorCount ? ` ${errorCount} failed.` : ""));
     };
-    reader.readAsText(file);
+
+    Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                const loadedData = JSON.parse(reader.result);
+                courses.push(loadedData);
+                loadedCount++;
+            } catch (e) {
+                errorCount++;
+            }
+            if (loadedCount + errorCount === totalFiles) onAllDone();
+        };
+        reader.onerror = () => {
+            errorCount++;
+            if (loadedCount + errorCount === totalFiles) onAllDone();
+        };
+        reader.readAsText(file);
+    });
 }
