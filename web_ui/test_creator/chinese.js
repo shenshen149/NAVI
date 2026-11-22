@@ -37,6 +37,72 @@ let hsk_data = [
     {question: "忙",answer: "mang2",description: "busy"},
     {question: "对",answer: "dui4",description: "right"},
     {question: "太",answer: "tai4",description: "too/ excessively"},
+    {question: "现在", answer: "xian4zai4", description: "now"},
+    {question: "点", answer: "dian3", description: "o'clock"},
+    {question: "早上", answer: "zao3 shang", description: "(early) morning"},
+    {question: "上午", answer: "shang4 wu3", description: "morning"},
+    {question: "分", answer: "fen1", description: "minute"},
+    {question: "课", answer: "ke4", description: "class; lesson"},
+    {question: "下午", answer: "xia4 wu3", description: "afternoon"},
+    {question: "见", answer: "jian4", description: "meet"},
+    {question: "吧", answer: "ba", description: "used at the end of a sentence to express suggestions, consultations, advice, or requests"},
+    {question: "电影院", answer: "dian4 ying3 yuan4", description: "cinema"},
+    {question: "看", answer: "kan4", description: "watch; see; read; look at"},
+    {question: "电影", answer: "dian4 ying3", description: "movie; film"},
+    {question: "事", answer: "shi4", description: "thing; affair"},
+    {question: "上课", answer: "shang4 ke4", description: "attend a class"},
+    {question: "呢", answer: "ne", description: "marker of a declarative sentence"},
+    {question: "半", answer: "ban4", description: "half"},
+    {question: "下课", answer: "xia4 ke4", description: "dismiss a class"},
+    {question: "在", answer: "zai4", description: "be at/in/on"},
+    {question: "家", answer: "jia1", description: "home"},
+    {question: "里", answer: "li3", description: "inner; inside"},
+    {question: "晚上", answer: "wan3 shang", description: "evening"},
+    {question: "医院", answer: "yi1 yuan4", description: "hospital"},
+    {question: "上班", answer: "shang4 ban1", description: "go to work"},
+    {question: "店", answer: "dian4", description: "shop; store"},
+    {question: "菜", answer: "cai4", description: "vegetable; greens"},
+    {question: "分钟", answer: "fen1 zhong1", description: "minute"},
+    {question: "后", answer: "hou4", description: "after; later"},
+    {question: "房间", answer: "fang2 jian1", description: "room"},
+    {question: "外", answer: "wai4", description: "outside"},
+    {question: "只", answer: "zhi1", description: "for certain animals"},
+    {question: "小", answer: "xiao3", description: "small; little"},
+    {question: "猫", answer: "mao1", description: "cat"},
+    {question: "没", answer: "mei2", description: "no; not; not yet"},
+    {question: "看见", answer: "kan4 jian4", description: "see; catch sight of"},
+    {question: "桌子", answer: "zhuo1zi", description: "table; desk"},
+    {question: "下", answer: "xia4", description: "low position or rank"},
+    {question: "漂亮", answer: "piao4liang", description: "pretty; beautiful"},
+    {question: "饭", answer: "fan4", description: "meal"},
+    {question: "大", answer: "da4", description: "big; large"},
+    {question: "病人", answer: "bing4 ren2", description: "patient"},
+    {question: "多", answer: "duo1", description: "many; much"},
+    {question: "医生", answer: "yi1 sheng1", description: "doctor"},
+    {question: "工作", answer: "gong1 zuo4", description: "work"},
+    {question: "前边", answer: "qian2 bian", description: "front"},
+    {question: "边", answer: "bian / bian1", description: "indicating locality/edge; side"},
+    {question: "家", answer: "jia1", description: "for families or enterprises"},
+    {question: "那个", answer: "na4 ge", description: "that"},
+    {question: "外边", answer: "wai4 bian", description: "outside"},
+    {question: "椅子", answer: "yi3 zi", description: "chair"},
+    {question: "上", answer: "shang / shang4", description: "used after a noun, indicating position/higher position"},
+    {question: "本", answer: "ben3", description: "for books"},
+    {question: "书", answer: "shu1", description: "book"},
+    {question: "那", answer: "na4", description: "that"},
+    {question: "第", answer: "di4", description: "marker of ordinal numbers"},
+    {question: "学习", answer: "xue2 xi2", description: "study; learn"},
+    {question: "做", answer: "zuo4", description: "do; engage in"},
+    {question: "白天", answer: "bai2 tian1", description: "day; daytime"},
+    {question: "读书", answer: "du2 shu1", description: "read a book"},
+    {question: "和", answer: "he2", description: "with"},
+    {question: "朋友", answer: "peng2 you", description: "friend"},
+    {question: "唱", answer: "chang4", description: "sing"},
+    {question: "歌", answer: "ge1", description: "song"},
+    {question: "好听", answer: "hao3 ting1", description: "pleasant to hear"},
+    {question: "电视", answer: "dian4 shi4", description: "television"},
+    {question: "狗", answer: "gou3", description: "dog"},
+    {question: "玩", answer: "wan2", description: "play; have fun"}
 ]
 
 let hsk_audio_mcqs = {
@@ -84,8 +150,50 @@ let hsk_audio_mcqs = {
             correct: "我明天下午两点还上课呢，四点半下课",
             description: "i have a class tomorrow afternoon at 2.00 and it finishes at 4.30",
             type: "fill in"
-        }
+        },
+        {
+            question: "<audio src='audio/008.mp3' controls/>",
+            correct: "好的。明天呢?",
+            description: "how about tomorrow",
+            type: "fill in"
+        },
+        {
+            question: "<audio src='audio/009.mp3' controls/>",
+            correct: "喂, 你在哪儿呢？",
+            description: "hey, where are you",
+            type: "fill in"
+        },
+        {
+            question: "<audio src='audio/010.mp3' controls/>",
+            correct: "我在家里呢。",
+            description: "im at home",
+            type: "fill in"
+        },
+        {
+            question: "<audio src='audio/011.mp3' controls/>",
+            correct: "我晚上六点半下班。",
+            description: "ill finish work at 6.30 in the evening",
+            type: "fill in"
 
+        },
+        {
+            question: "<audio src='audio/012.mp3' controls/>",
+            correct: "我入点去医院上班。",
+            description: "ill go to work at the hospital at 8.00",
+            type: "fill in"
+        },
+        {
+            question: "<audio src='audio/013.mp3' controls/>",
+            correct: "好的,你去店里买些吧。",
+            description: "alright, could you go to the store to buy some vegetables",
+            type: "fill in"
+        },
+        {
+            question: "<audio src='audio/014.mp3' controls/>",
+            correct: "好, 我十分钟后去。",
+            description: "okay, ill go in ten minutes",
+            type: "fill in"
+        }
     ]
 }
 let hsk_mcqs = {
