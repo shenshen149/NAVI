@@ -1,4 +1,5 @@
 let hsk_data = [
+    //1
     { question: "你好", answer: "ni3 hao3", description: "hello" },
     { question: "王老师", answer: "wang2 lao3 shi1", description: "teacher wang" },
     { question: "大家", answer: "da4 jia1", description: "every one" },
@@ -25,6 +26,7 @@ let hsk_data = [
     { question: "桌子", answer: "zhuo1 zi", description: "table / desk" },
     { question: "下", answer: "xia4", description: "under / below" },
     { question: "漂亮", answer: "piao4 liang5", description: "pretty / beautiful" },
+    //2
     {question: "请问",answer: "qing3 wen4",description: "excuse me/ may i ask"},
     {question: "什么",answer: "shen2 me",description: "what"},
     {question: "名字",answer: "ming2 zi",description: "name"},
@@ -54,6 +56,7 @@ let hsk_data = [
     {question: "呢", answer: "ne", description: "marker of a declarative sentence"},
     {question: "半", answer: "ban4", description: "half"},
     {question: "下课", answer: "xia4 ke4", description: "dismiss a class"},
+    //3
     {question: "在", answer: "zai4", description: "be at/in/on"},
     {question: "家", answer: "jia1", description: "home"},
     {question: "里", answer: "li3", description: "inner; inside"},
@@ -75,6 +78,7 @@ let hsk_data = [
     {question: "下", answer: "xia4", description: "low position or rank"},
     {question: "漂亮", answer: "piao4liang", description: "pretty; beautiful"},
     {question: "饭", answer: "fan4", description: "meal"},
+    //4
     {question: "大", answer: "da4", description: "big; large"},
     {question: "病人", answer: "bing4 ren2", description: "patient"},
     {question: "多", answer: "duo1", description: "many; much"},
@@ -93,6 +97,7 @@ let hsk_data = [
     {question: "第", answer: "di4", description: "marker of ordinal numbers"},
     {question: "学习", answer: "xue2 xi2", description: "study; learn"},
     {question: "做", answer: "zuo4", description: "do; engage in"},
+    //5
     {question: "白天", answer: "bai2 tian1", description: "day; daytime"},
     {question: "读书", answer: "du2 shu1", description: "read a book"},
     {question: "和", answer: "he2", description: "with"},
@@ -102,7 +107,20 @@ let hsk_data = [
     {question: "好听", answer: "hao3 ting1", description: "pleasant to hear"},
     {question: "电视", answer: "dian4 shi4", description: "television"},
     {question: "狗", answer: "gou3", description: "dog"},
-    {question: "玩", answer: "wan2", description: "play; have fun"}
+    {question: "玩", answer: "wan2", description: "play; have fun"},
+    {question: "杯子", answer: "bei1 zi", description: "cup; glass"},
+    {question: "售货员", answer: "shou4 huo4 yuan2", description: "shop assistant; salesperson; vendor"},
+    {question: "这边", answer: "zhe4 bian1", description: "here; this side"},
+    {question: "钱", answer: "qian2", description: "money"},
+    {question: "这些", answer: "zhe4 xie1", description: "these"},
+    {question: "块", answer: "kuai4", description: "for silver dollars or paper money"},
+    {question: "那些", answer: "na4 xie1", description: "those"},
+    {question: "这儿", answer: "zhe4r", description: "here"},
+    {question: "水果", answer: "shui3 guo3", description: "fruit"},
+    {question: "少", answer: "shao3", description: "few; little"},
+    {question: "斤", answer: "jin1", description: "jin (measurement for 0.5kg"},
+    {question: "苹果", answer: "ping2 guo3", description: "apple"},
+    {question: "便宜", answer: "pian2 yi", description: "cheap; affordable"}
 ]
 
 let hsk_audio_mcqs = {
@@ -192,6 +210,36 @@ let hsk_audio_mcqs = {
             question: "<audio src='audio/014.mp3' controls/>",
             correct: "好, 我十分钟后去。",
             description: "okay, ill go in ten minutes",
+            type: "fill in"
+        },
+        {
+            question: "<audio src='audio/015.mp3' controls/>",
+            correct: "请问，有杯子吗？",
+            description: "excuse me, do you have any cups",
+            type: "fill in"
+        },
+        {
+            question: "<audio src='audio/016.mp3' controls/>",
+            correct: "有，杯子在这边 ",
+            description: "yes, the cups are over there",
+            type: "fill in"
+        },
+        {
+            question: "<audio src='audio/017.mp3' controls/>",
+            correct: "多少钱一个？",
+            description: "how much is one",
+            type: "fill in"
+        },
+        {
+            question: "<audio src='audio/018.mp3' controls/>",
+            correct: "这些五块钱一个，那些十块钱一个",
+            description: "these are five yuan each, and those are ten yuan each",
+            type: "fill in"
+        },
+        {
+            question: "<audio src='audio/019.mp3' controls/>",
+            correct: "我买这个吧",
+            description: "ill take this one please",
             type: "fill in"
         }
     ]
