@@ -1,5 +1,5 @@
 {
-  "name": "hsk lesson 10",
+  "name": "hsk1 lesson 10",
   "questions": [
     {
       "question": "杯子",
@@ -79,6 +79,42 @@
       "description": "cheap; affordable",
       "type": "fill in"
     },
+    {
+      "question": "商店",
+      "correct": "shang1 dian4",
+      "description": "shop; store",
+      "type": "fill in"
+    },
+    {
+      "question": "衣服",
+      "correct": "yi1 fu",
+      "description": "clothes",
+      "type": "fill in"
+    },
+    {
+      "question": "件",
+      "correct": "jian4",
+      "description": "piece",
+      "type": "fill in"
+    },
+    {
+      "question": "怎么样",
+      "correct": "zen3 me yang4",
+      "description": "(used to enquire about the nature, condition, manner, etc. of sth) how",
+      "type": "fill in"
+    },
+    {
+      "question": "贵",
+      "correct": "gui4",
+      "description": "expensive",
+      "type": "fill in"
+    },
+    {
+      "question": "穿",
+      "correct": "chuan1",
+      "description": "wear; put on",
+      "type": "fill in"
+    },
      {
       "question": "<audio src='audio/015.mp3' controls/>",
       "correct": "请问，有杯子吗？",
@@ -108,6 +144,77 @@
       "correct": "我买这个吧",
       "description": "ill take this one please",
       "type": "fill in"
+    },
+    {
+      "question": "<audio src='audio/020.mp3' controls/>",
+      "correct": "这儿的水果真不少",
+      "description": "theres so much fruit here",
+      "type": "fill in"
+    },
+    {
+      "question": "<audio src='audio/021.mp3' controls/>",
+      "correct": "您想买什么",
+      "description": "what would you like to buy",
+      "type": "fill in"
+    },
+    {
+      "question": "<audio src='audio/022.mp3' controls/>",
+      "correct": "我想买两斤苹果",
+      "description": "id like two jin of apples please",
+      "type": "fill in"
+    },
+    {
+      "question": "<audio src='audio/023.mp3' controls/>",
+      "correct": "苹果三块五一斤。这些七块二，七块钱吧",
+      "description": "the apples are 3.5 yuan per jin. Thats 7.2 yuan in total, lets round it down to 7 yuan",
+      "type": "fill in"
+    },
+    {
+      "question": "<audio src='audio/024.mp3' controls/>",
+      "correct": "好的，这儿的苹果真便宜",
+      "description": "great! The apples here are really affordable!",
+      "type": "fill in"
+    },
+    {
+        "question": "<audio src='audio/025.mp3' controls/>",
+        "answer": "这家商店衣服真多！这件一百元，怎么样？",
+        "description": "there are so many clothes in this store! This one is 100 yuan. What do you think",
+        "type": "fill in"
+    },
+    {
+        "question": "<audio src='audio/026.mp3' controls/>",
+        "answer": "好看，也不贵",
+        "description": "it looks great, and its not expensive",
+        "type": "fill in"
+    },
+    {
+        "question": "<audio src='audio/027.mp3' controls/>",
+        "answer": "小雪能穿，买一件吧",
+        "description": "xiaoxue can wear it. Lets get one",
+        "type": "fill in"
+    },
+    {
+        "question": "<audio src='audio/028.mp3' controls/>",
+        "answer": "好的。小明能穿吗？",
+        "description": "okay. Do you think xiaoming can wear it too",
+        "type": "fill in"
+    },
+    {
+        "question": "<audio src='audio/029.mp3' controls/>",
+        "answer": "不能。这些是女孩子穿的衣服，男孩子的衣服在那儿",
+        "description": "no. these are girls clothes. The boys section is over there",
+        "type": "fill in"
     }
   ]
 }
+
+
+  
+
+  
+
+  
+
+  
+
+  

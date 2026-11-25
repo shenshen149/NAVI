@@ -1,0 +1,209 @@
+{
+  "name": "hsk1 lesson 11",
+  "questions": [
+    {
+      "question": "时候",
+      "correct": "shi2 hou",
+      "description": "a point in time",
+      "type": "fill in"
+    },
+    {
+      "question": "饭店",
+      "correct": "fan4 dian4",
+      "description": "restaurant",
+      "type": "fill in"
+    },
+    {
+      "question": "知道",
+      "correct": "zhi1 dao2",
+      "description": "know, realize",
+      "type": "fill in"
+    },
+    {
+      "question": "正在",
+      "correct": "zhen4 zai4",
+      "description": "in the process of",
+      "type": "fill in"
+    },
+    {
+      "question": "找",
+      "correct": "zhao3",
+      "description": "look for",
+      "type": "fill in"
+    },
+    {
+      "question": "开车",
+      "correct": "kai1 che1",
+      "description": "drive a vehicle",
+      "type": "fill in"
+    },
+    {
+      "question": "读",
+      "correct": "du2",
+      "description": "attend school; study",
+      "type": "fill in"
+    },
+    {
+      "question": "在",
+      "correct": "zai4",
+      "description": "used to indicate an action in progress",
+      "type": "fill in"
+    },
+    {
+      "question": "大学",
+      "correct": "da4 xue2",
+      "description": "university; college",
+      "type": "fill in"
+    },
+    {
+      "question": "大学生",
+      "correct": "da4 xue2 sheng1",
+      "description": "college student",
+      "type": "fill in"
+    },
+    {
+      "question": "学",
+      "correct": "xue2",
+      "description": "study; learn",
+      "type": "fill in"
+    },
+    {
+      "question": "弟弟",
+      "correct": "di4 di",
+      "description": "younger brother",
+      "type": "fill in"
+    },
+    {
+      "question": "起床",
+      "correct": "qi3 chuang2",
+      "description": "get up; get out of bed",
+      "type": "fill in"
+    },
+    {
+      "question": "睡觉",
+      "correct": "shui4 jiao4",
+      "description": "sleep",
+      "type": "fill in"
+    },
+    {
+      "question": "那里",
+      "correct": "na4 li",
+      "description": "there; that place",
+      "type": "fill in"
+    },
+    {
+      "question": "哪里",
+      "correct": "na3 li",
+      "description": "where",
+      "type": "fill in"
+    },
+    {
+      "question": "昨天",
+      "correct": "zuo2 tian1",
+      "description": "yesterday",
+      "type": "fill in"
+    },
+    {
+      "question": "问",
+      "correct": "wen4",
+      "description": "ask",
+      "type": "fill in"
+    },
+    {
+      "question": "对",
+      "correct": "dui4",
+      "description": "to; towards",
+      "type": "fill in"
+    },
+    {
+      "question": "说",
+      "correct": "shuo1",
+      "description": "speak; talk; say",
+      "type": "fill in"
+    },
+    {
+      "question": "要",
+      "correct": "yao4",
+      "description": "want; wish",
+      "type": "fill in"
+    },
+    {
+      "question": "小朋友",
+      "correct": "xia3 peng2 you",
+      "description": "child; kid",
+      "type": "fill in"
+    },
+    {
+    "question": "<audio src='audio/030.mp3' controls/>",
+    "answer": "你还在读大学吗？",
+    "description": "are you still studying at university",
+    "type": "fill in"
+  },
+  {
+    "question": "<audio src='audio/031.mp3' controls/>",
+    "answer": "对，我读大学呢，还是大学生",
+    "description": "yes. Im studying at university, and im still an undergraduate",
+    "type": "fill in"
+  },
+  {
+    "question": "<audio src='audio/032.mp3' controls/>",
+    "answer": "你们学习忙不忙？",
+    "description": "are you busy with your studies",
+    "type": "fill in"
+  },
+  {
+    "question": "<audio src='audio/033.mp3' controls/>",
+    "answer": "非常忙，我学医，我们的课很多",
+    "description": "very busy. I major in medicine, and we have a lot of classes",
+    "type": "fill in"
+  },
+  {
+    "question": "<audio src='audio/030.mp3' controls/>",
+    "answer": "你还在读大学吗？",
+    "description": "are you still studying at university",
+    "type": "fill in"
+  },
+  {
+    "question": "<audio src='audio/031.mp3' controls/>",
+    "answer": "对，我读大学呢，还是大学生",
+    "description": "yes. Im studying at university, and im still an undergraduate",
+    "type": "fill in"
+  },
+  {
+    "question": "<audio src='audio/032.mp3' controls/>",
+    "answer": "你们学习忙不忙？",
+    "description": "are you busy with your studies",
+    "type": "fill in"
+  },
+  {
+    "question": "<audio src='audio/033.mp3' controls/>",
+    "answer": "非常忙，我学医，我们的课很多",
+    "description": "very busy. I major in medicine, and we have a lot of classes",
+    "type": "fill in"
+  },
+  {
+    "question": "<audio src='audio/030.mp3' controls/>",
+    "answer": "你还在读大学吗？",
+    "description": "are you still studying at university",
+    "type": "fill in"
+  },
+  {
+    "question": "<audio src='audio/031.mp3' controls/>",
+    "answer": "对，我读大学呢，还是大学生",
+    "description": "yes. Im studying at university, and im still an undergraduate",
+    "type": "fill in"
+  },
+  {
+    "question": "<audio src='audio/032.mp3' controls/>",
+    "answer": "你们学习忙不忙？",
+    "description": "are you busy with your studies",
+    "type": "fill in"
+  },
+  {
+    "question": "<audio src='audio/033.mp3' controls/>",
+    "answer": "非常忙，我学医，我们的课很多",
+    "description": "very busy. I major in medicine, and we have a lot of classes",
+    "type": "fill in"
+  }
+  ]
+}
