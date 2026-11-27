@@ -177,31 +177,31 @@
     },
     {
         "question": "<audio src='audio/025.mp3' controls/>",
-        "answer": "这家商店衣服真多！这件一百元，怎么样？",
+        "correct": "这家商店衣服真多！这件一百元，怎么样？",
         "description": "there are so many clothes in this store! This one is 100 yuan. What do you think",
         "type": "fill in"
     },
     {
         "question": "<audio src='audio/026.mp3' controls/>",
-        "answer": "好看，也不贵",
+        "correct": "好看，也不贵",
         "description": "it looks great, and its not expensive",
         "type": "fill in"
     },
     {
         "question": "<audio src='audio/027.mp3' controls/>",
-        "answer": "小雪能穿，买一件吧",
+        "correct": "小雪能穿，买一件吧",
         "description": "xiaoxue can wear it. Lets get one",
         "type": "fill in"
     },
     {
         "question": "<audio src='audio/028.mp3' controls/>",
-        "answer": "好的。小明能穿吗？",
+        "correct": "好的。小明能穿吗？",
         "description": "okay. Do you think xiaoming can wear it too",
         "type": "fill in"
     },
     {
         "question": "<audio src='audio/029.mp3' controls/>",
-        "answer": "不能。这些是女孩子穿的衣服，男孩子的衣服在那儿",
+        "correct": "不能。这些是女孩子穿的衣服，男孩子的衣服在那儿",
         "description": "no. these are girls clothes. The boys section is over there",
         "type": "fill in"
     }
