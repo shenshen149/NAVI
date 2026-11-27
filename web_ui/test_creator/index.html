@@ -9,8 +9,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 200px;
-            height: 200px;
+            width: 120px;
+            height: 120px;
             border: solid black;
         }
         #test-section{
@@ -20,9 +20,14 @@
             align-items: center;
             justify-content: center;
         }
+        .questiondiv{
+            font-size: 36px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
     </style>
 </head>
 <body>
+    <a href="question_editor.html">question editor</a>
     <div id="course-select">
         <h2>select courses</h2>
         <div id="course-list" class="flex row wrappable"></div>
@@ -93,6 +98,7 @@
             let state="unanswered"
             if(data.type=="multiple choice"){
                 let question = document.createElement("div")
+                question.className="questiondiv"
                 question.innerHTML=`${data.question}`
                 let answer = document.createElement("div")
                 let options_div = document.createElement("div")
@@ -119,6 +125,7 @@
             }
             if(data.type=="fill in"){
                 let question = document.createElement("div")
+                question.className="questiondiv"
                 question.innerHTML=`${data.question}`
                 let answer = document.createElement("div")
                 let input = document.createElement("input")
@@ -214,6 +221,10 @@
             }
             document.getElementById("format").textContent=format
         }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const tags = urlParams.getAll('course');
+        console.log(tags)
         render_course_list()
     </script>
 </body>

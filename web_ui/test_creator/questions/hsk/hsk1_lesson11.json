@@ -135,73 +135,73 @@
     },
     {
     "question": "<audio src='audio/030.mp3' controls/>",
-    "answer": "你还在读大学吗？",
+    "correct": "你还在读大学吗？",
     "description": "are you still studying at university",
     "type": "fill in"
   },
   {
     "question": "<audio src='audio/031.mp3' controls/>",
-    "answer": "对，我读大学呢，还是大学生",
+    "correct": "对，我读大学呢，还是大学生",
     "description": "yes. Im studying at university, and im still an undergraduate",
     "type": "fill in"
   },
   {
     "question": "<audio src='audio/032.mp3' controls/>",
-    "answer": "你们学习忙不忙？",
+    "correct": "你们学习忙不忙？",
     "description": "are you busy with your studies",
     "type": "fill in"
   },
   {
     "question": "<audio src='audio/033.mp3' controls/>",
-    "answer": "非常忙，我学医，我们的课很多",
+    "correct": "非常忙，我学医，我们的课很多",
     "description": "very busy. I major in medicine, and we have a lot of classes",
     "type": "fill in"
   },
   {
     "question": "<audio src='audio/030.mp3' controls/>",
-    "answer": "你还在读大学吗？",
+    "correct": "你还在读大学吗？",
     "description": "are you still studying at university",
     "type": "fill in"
   },
   {
     "question": "<audio src='audio/031.mp3' controls/>",
-    "answer": "对，我读大学呢，还是大学生",
+    "correct": "对，我读大学呢，还是大学生",
     "description": "yes. Im studying at university, and im still an undergraduate",
     "type": "fill in"
   },
   {
     "question": "<audio src='audio/032.mp3' controls/>",
-    "answer": "你们学习忙不忙？",
+    "correct": "你们学习忙不忙？",
     "description": "are you busy with your studies",
     "type": "fill in"
   },
   {
     "question": "<audio src='audio/033.mp3' controls/>",
-    "answer": "非常忙，我学医，我们的课很多",
+    "correct": "非常忙，我学医，我们的课很多",
     "description": "very busy. I major in medicine, and we have a lot of classes",
     "type": "fill in"
   },
   {
     "question": "<audio src='audio/030.mp3' controls/>",
-    "answer": "你还在读大学吗？",
+    "correct": "你还在读大学吗？",
     "description": "are you still studying at university",
     "type": "fill in"
   },
   {
     "question": "<audio src='audio/031.mp3' controls/>",
-    "answer": "对，我读大学呢，还是大学生",
+    "correct": "对，我读大学呢，还是大学生",
     "description": "yes. Im studying at university, and im still an undergraduate",
     "type": "fill in"
   },
   {
     "question": "<audio src='audio/032.mp3' controls/>",
-    "answer": "你们学习忙不忙？",
+    "correct": "你们学习忙不忙？",
     "description": "are you busy with your studies",
     "type": "fill in"
   },
   {
     "question": "<audio src='audio/033.mp3' controls/>",
-    "answer": "非常忙，我学医，我们的课很多",
+    "correct": "非常忙，我学医，我们的课很多",
     "description": "very busy. I major in medicine, and we have a lot of classes",
     "type": "fill in"
   }

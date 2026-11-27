@@ -1,0 +1,193 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .qstn{
+            border: solid;
+            width: 200px;
+            max-height: 120px;
+            overflow-y: auto;
+            padding: 5px;
+            margin: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div id="questions_data"></div>
+    <div id="question_editor"></div>
+    <button onclick="export_course()" class="btn">export</button>
+    <input type="file" name="" id="import_file" multiple>
+    <button onclick="import_course()" class="btn">import</button>
+    <div id="editor"></div>
+    <script>
+        let question_data = {name:"null",questions:[]}
+        function render_question_data(data){
+            document.getElementById("questions_data").innerHTML=""
+            let name = document.createElement("div")
+            name.innerHTML=`name: ${data.name}`
+            let questions = document.createElement("div")
+            questions.className="flex row wrappable"
+            for(let i=0;i<data.questions.length;i++){
+                let question = document.createElement("div")
+                let state = "idle"
+                question.onclick=()=>{
+                    if(state=="idle"){
+                        state="edit"
+                        set_edit(i)
+                        question.style.border="solid blue"
+                    }else{
+                        state="idle"
+                        question.style.border="solid black"
+                        set_edit(-1)
+                    }
+                    
+                }
+                question.className="flex column qstn"
+                question.innerHTML=`
+                    <div>${i}</div>
+                    <div>${data.questions[i].type}</div>
+                    <div>${data.questions[i].question}</div>
+                    <div>${data.questions[i].correct}</div>
+                    <div>${data.questions[i].description}</div>
+                `
+                questions.append(question)
+            }
+            document.getElementById("questions_data").append(name,questions)
+        }
+        function set_main_input(){
+            let div = document.createElement("div")
+            let title = document.createElement("div")
+            title.innerHTML="<h3>course details<h3>"
+            let name_input = document.createElement("input")
+            name_input.placeholder="name"
+            name_input.className="inp"
+            let submit_btn = document.createElement("button")
+            submit_btn.textContent="submit"
+            submit_btn.className="btn"
+            submit_btn.onclick=()=>{
+                if(!name_input.value)return
+                question_data.name = name_input.value
+                render_question_data(question_data)
+                name_input.value=""
+            }
+            div.append(title,name_input,submit_btn)
+            document.getElementById("editor").append(div)
+        }
+        function set_fillin_input(){
+            let div = document.createElement("div")
+            let title = document.createElement("div")
+            title.innerHTML="<h3>fill in<h3>"
+            let question_input = document.createElement("input")
+            question_input.placeholder="question"
+            question_input.className="inp"
+            let description_input = document.createElement("input")
+            description_input.placeholder="description"
+            description_input.className="inp"
+            let correct_input = document.createElement("input")
+            correct_input.placeholder = "correct"
+            correct_input.className="inp"
+            let submit_btn = document.createElement("button")
+            submit_btn.textContent="submit"
+            submit_btn.className="btn"
+            submit_btn.onclick=()=>{
+                if(!question_input.value)return
+                question_data.questions.push({
+                    type:"fill in",
+                    question:question_input.value,
+                    description:description_input.value,
+                    correct:correct_input.value
+                })
+                render_question_data(question_data)
+                question_input.value=""
+                description_input.value=""
+                correct_input.value=""
+            }
+            div.append(title,question_input,correct_input,description_input,submit_btn)
+            document.getElementById("editor").append(div)
+        }
+        function export_course(){
+            let data = question_data
+            if(!data)return
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            const date = new Date().toISOString().split("T")[0];
+            a.download = `${data.name}.json`;
+            a.click();
+
+            URL.revokeObjectURL(url);
+        }
+
+        function import_course(){
+            let file_input = document.getElementById("import_file")
+            const files = file_input.files;
+            if (!files || files.length === 0) return;
+
+            let loadedCount = 0;
+            let errorCount = 0;
+            const totalFiles = files.length;
+
+            // Helper to run after all files are processed
+            const onAllDone = () => {
+                if (loadedCount > 0) render_question_data(question_data);
+                alert(`Loaded ${loadedCount} file(s).` + (errorCount ? ` ${errorCount} failed.` : ""));
+            };
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        const loadedData = JSON.parse(reader.result);
+                        question_data=loadedData
+                        loadedCount++;
+                    } catch (e) {
+                        errorCount++;
+                    }
+                    if (loadedCount + errorCount === totalFiles) onAllDone();
+                };
+                reader.onerror = () => {
+                    errorCount++;
+                    if (loadedCount + errorCount === totalFiles) onAllDone();
+                };
+                reader.readAsText(file);
+            });
+        }
+
+        function set_edit(index){
+            document.getElementById("question_editor").innerHTML=""
+            if(index==-1)return
+            let title = document.createElement("h3")
+            title.textContent="edit question"
+            let question = question_data.questions[index]
+            let name_input = document.createElement("input")
+            name_input.className="inp"
+            name_input.value=question.question
+            let correct_input = document.createElement("input")
+            correct_input.className="inp"
+            correct_input.value=question.correct
+            let desc_input = document.createElement("input")
+            desc_input.className="inp"
+            desc_input.value=question.description
+            let submit = document.createElement("button")
+            submit.className="btn"
+            submit.textContent="submit"
+            submit.onclick=()=>{
+                question.question=name_input.value
+                question.correct=correct_input.value
+                question.description=desc_input.value
+                document.getElementById("question_editor").innerHTML=""
+                render_question_data(question_data)
+            }
+            document.getElementById("question_editor").append(title,name_input,correct_input,desc_input,submit)
+        }
+        set_main_input()
+        set_fillin_input()
+    </script>
+</body>
+</html>
