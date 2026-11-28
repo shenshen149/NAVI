@@ -108,6 +108,117 @@
             div.append(title,question_input,correct_input,description_input,submit_btn)
             document.getElementById("editor").append(div)
         }
+        function set_mcq_input(){
+            let div = document.createElement("div")
+            let title = document.createElement("div")
+            title.innerHTML="<h3>multiple choice<h3>"
+            let question_input = document.createElement("input")
+            question_input.placeholder="question"
+            question_input.className="inp"
+            let description_input = document.createElement("input")
+            description_input.placeholder="description"
+            description_input.className="inp"
+            let choices = document.createElement("div")
+            let choice_list = []
+            let answer =0
+            function render_choice_list(){
+                choices.innerHTML=""
+                for(let i=0;i<choice_list.length;i++){
+                    let select = document.createElement("button")
+                    select.textContent="answer"
+                    select.onclick=()=>{
+                        answer=i
+                        select.style.backgroundColor="green"
+                    }
+                    choices.append(choice_list[i],select)
+                }
+            }
+            let add_choice = document.createElement("button")
+            add_choice.textContent="add choice"
+            add_choice.onclick=()=>{
+                let choice = document.createElement("input")
+                choice.className="inp"
+                choice.placeholder=choice_list.length
+                choice_list.push(choice)
+                render_choice_list()
+            }
+            let submit_btn = document.createElement("button")
+            submit_btn.textContent="submit"
+            submit_btn.className="btn"
+            submit_btn.onclick=()=>{
+                if(!question_input.value)return
+                let ops = []
+                for(let i=0;i<choice_list.length;i++){
+                    ops.push(choice_list[i].value)
+                }
+                question_data.questions.push({
+                    type:"multiple choice",
+                    question:question_input.value,
+                    options:ops,
+                    description:description_input.value,
+                    correct:answer
+                })
+                render_question_data(question_data)
+                question_input.value=""
+                description_input.value=""
+                choice_list=[]
+                render_choice_list()
+            }
+            div.append(title,question_input,choices,add_choice,description_input,submit_btn)
+            document.getElementById("editor").append(div)
+        }
+        function set_maq_input(){
+            let div = document.createElement("div")
+            let title = document.createElement("div")
+            title.innerHTML="<h3>multiple answer<h3>"
+            let question_input = document.createElement("input")
+            question_input.placeholder="question"
+            question_input.className="inp"
+            let description_input = document.createElement("input")
+            description_input.placeholder="description"
+            description_input.className="inp"
+            let choices = document.createElement("div")
+            let choice_list = []
+            function render_choice_list(){
+                choices.innerHTML=""
+                for(let i=0;i<choice_list.length;i++){
+                    choices.append(choice_list[i])
+                }
+            }
+            let add_choice = document.createElement("button")
+            add_choice.textContent="add answer"
+            add_choice.onclick=()=>{
+                let choice = document.createElement("input")
+                choice.className="inp"
+                choice.placeholder=choice_list.length
+                choice_list.push(choice)
+                render_choice_list()
+            }
+            let submit_btn = document.createElement("button")
+            submit_btn.textContent="submit"
+            submit_btn.className="btn"
+            submit_btn.onclick=()=>{
+                if(!question_input.value)return
+                let ops = []
+                for(let i=0;i<choice_list.length;i++){
+                    ops.push(choice_list[i].value)
+                }
+                question_data.questions.push({
+                    type:"multiple answer",
+                    question:question_input.value,
+                    answers:ops,
+                    correct:ops,
+                    description:description_input.value,
+                })
+                render_question_data(question_data)
+                question_input.value=""
+                description_input.value=""
+                choice_list=[]
+                render_choice_list()
+            }
+            div.append(title,question_input,choices,add_choice,description_input,submit_btn)
+            document.getElementById("editor").append(div)
+        }
         function export_course(){
             let data = question_data
             if(!data)return
@@ -188,6 +299,8 @@
         }
         set_main_input()
         set_fillin_input()
+        set_mcq_input()
+        set_maq_input()
     </script>
 </body>
 </html>
